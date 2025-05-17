@@ -3,6 +3,11 @@
 #include <array>
 #include <string>
 #include <iostream>
+
+struct YakuResult {
+    int han{};
+    std::string yaku;
+};
 class WinningHand{
 public:
     std::array<int, 7> tileIds;
@@ -16,6 +21,13 @@ public:
     std::string yakuString = "";
 
     WinningHand() = default;
+
+    void addResult(const YakuResult& res) {
+        if (res.han > 0) {
+            totalHan += res.han;
+            yakuString += res.yaku;
+        }
+    }
 
     Tiles toTiles() const {
         Tiles t;
@@ -78,70 +90,71 @@ public:
     }
 
     void calculateYaku() {
-        winds();
-        dora();
-        tanyao();
-        pinfu();
-        iipeikou();
-        chitoitsu();
-        toitoi();
-        sanshoku();
-        ittsuu();
-        hon_chinitsu();
-        sanankou();
-        shousangen();
-        ryanpeikou();
-        hunroutou();
-        taiyao();
+        addResult(winds());
+        addResult(dora());
+        addResult(tanyao());
+        addResult(pinfu());
+        addResult(iipeikou());
+        addResult(chitoitsu());
+        addResult(toitoi());
+        addResult(sanshoku());
+        addResult(ittsuu());
+        addResult(hon_chinitsu());
+        addResult(sanankou());
+        addResult(shousangen());
+        addResult(ryanpeikou());
+        addResult(hunroutou());
+        addResult(taiyao());
         // local yakus
-        reversibleTiles();
-        tripleRedTiles();
-        uumensai();
-        sanshoku_tsuukan();
-        sanrenkou();
-        isshokuSanjun();
+        addResult(reversibleTiles());
+        addResult(tripleRedTiles());
+        addResult(uumensai());
+        addResult(sanshoku_tsuukan());
+        addResult(sanrenkou());
+        addResult(isshokuSanjun());
     }
 
     
 
     void calculateYakuman() {
-        daisangen();
-        suushi();
-        tsuuiisou();
-        ryuuiisou();
-        chinroutou();
-        chuuren();
-        suuankouTanki();
+        addResult(daisangen());
+        addResult(suushi());
+        addResult(tsuuiisou());
+        addResult(ryuuiisou());
+        addResult(chinroutou());
+        addResult(chuuren());
+        addResult(suuankouTanki());
         // local yakuman
-        suurenkou();
-        isshokuSanjun();
-        isshokuYonjun();
-        benikujaku();
-        kouitten();
-        kokuiisou();
-        daiXrin();
+        addResult(suurenkou());
+        addResult(isshokuSanjun());
+        addResult(isshokuYonjun());
+        addResult(benikujaku());
+        addResult(kouitten());
+        addResult(kokuiisou());
+        addResult(daiXrin());
     }
 
-    void winds() {
+    YakuResult winds() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
-        else{
-            for (int i = 0; i < 4; i++){
-                if (groupTypes[i] == 0 && (tileIds[i] == gameInfo.prevailingWind || tileIds[i] == gameInfo.seatWind)){
-                    totalHan += 1;
-                    if (tileIds[i] == gameInfo.prevailingWind){
-                        yakuString += "场风 ";
-                    }
-                    else if (tileIds[i] == gameInfo.seatWind){
-                        yakuString += "自风 ";
-                    }
+        for (int i = 0; i < 4; i++){
+            if (groupTypes[i] == 0 && (tileIds[i] == gameInfo.prevailingWind || tileIds[i] == gameInfo.seatWind)){
+                res.han += 1;
+                if (tileIds[i] == gameInfo.prevailingWind){
+                    res.yaku += "场风 ";
+                }
+                else if (tileIds[i] == gameInfo.seatWind){
+                    res.yaku += "自风 ";
                 }
             }
         }
+        return res;
     }
     
-    void dora() {
+    YakuResult dora() const {
+        YakuResult res;
         // dora
         int doraCount = 0;
         if (isChiitoitsu){
@@ -162,8 +175,8 @@ public:
             }
         }
         if (doraCount > 0){
-            totalHan += doraCount;
-            yakuString += "宝牌" + std::to_string(doraCount) + " ";
+            res.han += doraCount;
+            res.yaku += "宝牌" + std::to_string(doraCount) + " ";
         }
         // akadora
         int hasRed5m = 0, hasRed5p = 0, hasRed5s = 0;
@@ -180,12 +193,14 @@ public:
         }
         int akaDoraCount = hasRed5m + hasRed5p + hasRed5s;
         if (akaDoraCount > 0){
-            totalHan += akaDoraCount;
-            yakuString += "赤宝牌" + std::to_string(akaDoraCount) + " ";
+            res.han += akaDoraCount;
+            res.yaku += "赤宝牌" + std::to_string(akaDoraCount) + " ";
         }
+        return res;
     }
 
-    void tanyao() {
+    YakuResult tanyao() const {
+        YakuResult res;
         bool isTanyao = true;
         for (auto tileId : fullTiles()){
             if (Tiles::isYaochu(tileId)){
@@ -194,14 +209,16 @@ public:
             }
         }
         if (isTanyao){
-            totalHan += 1;
-            yakuString += "断幺 ";
+            res.han += 1;
+            res.yaku += "断幺 ";
         }
+        return res;
     }
 
-    void pinfu() {
+    YakuResult pinfu() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
         bool isPinfu = true;
         for (int i = 0; i < 4; i++){
@@ -218,14 +235,16 @@ public:
             }
         }
         if (isPinfu){
-            totalHan += 1;
-            yakuString += "平和 ";
+            res.han += 1;
+            res.yaku += "平和 ";
         }
+        return res;
     }
 
-    void iipeikou() {
+    YakuResult iipeikou() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
         bool isLipeikou = false;
         if (groupTypes[0] == 1 && groupTypes[1] == 1 && tileIds[0] == tileIds[1]){
@@ -238,31 +257,37 @@ public:
             isLipeikou = true;
         }
         if (isLipeikou){
-            totalHan += 1;
-            yakuString += "一杯口 ";
+            res.han += 1;
+            res.yaku += "一杯口 ";
         }
+        return res;
     }
 
-    void chitoitsu() {
+    YakuResult chitoitsu() const {
+        YakuResult res;
         if (isChiitoitsu){
-            totalHan += 2;
-            yakuString += "七对子 ";
+            res.han += 2;
+            res.yaku += "七对子 ";
         }
+        return res;
     }
 
-    void toitoi() {
+    YakuResult toitoi() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
         if (groupTypes[0] == 0 && groupTypes[1] == 0 && groupTypes[2] == 0 && groupTypes[3] == 0){
-            totalHan += 2;
-            yakuString += "对对和 ";
+            res.han += 2;
+            res.yaku += "对对和 ";
         }
+        return res;
     }
 
-    void sanshoku() {
+    YakuResult sanshoku() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
         bool isSanshoku = false;
         int sameGroupType = -1;
@@ -283,14 +308,15 @@ public:
             isSanshoku = true;
         }
         if (isSanshoku){
-            totalHan += 2;
+            res.han += 2;
             if (sameGroupType == 0){
-                yakuString += "三色同刻 ";
+                res.yaku += "三色同刻 ";
             }
             else{
-                yakuString += "三色同顺 ";
+                res.yaku += "三色同顺 ";
             }
         }
+        return res;
     }
 
     bool _ittsuu_helper() const {
@@ -334,14 +360,17 @@ public:
         return false;
     }
 
-    void ittsuu() {
+    YakuResult ittsuu() const {
+        YakuResult res;
         if (_ittsuu_helper()){
-            totalHan += 2;
-            yakuString += "一气通贯 ";
+            res.han += 2;
+            res.yaku += "一气通贯 ";
         }
+        return res;
     }
 
-    void hon_chinitsu() {
+    YakuResult hon_chinitsu() const {
+        YakuResult res;
         std::array<int, 4> counts;
         int han = 0;
         for (auto tileId : fullTiles()){
@@ -369,14 +398,16 @@ public:
             }
         }
         if (han == 6){
-            yakuString += "清一色 ";
+            res.yaku += "清一色 ";
         }else if (han == 3){
-            yakuString += "混一色 ";
+            res.yaku += "混一色 ";
         }
-        totalHan += han;
+        res.han += han;
+        return res;
     }
 
-    void sanankou() {
+    YakuResult sanankou() const {
+        YakuResult res;
         int ankou_count = 0;
         for (int i = 0; i < 4; i++){
             if (groupTypes[i] == 0 && waitMeldIndex != i){
@@ -384,14 +415,16 @@ public:
             }
         }
         if (ankou_count >= 3){
-            totalHan += 2;
-            yakuString += "三暗刻 ";
+            res.han += 2;
+            res.yaku += "三暗刻 ";
         }
+        return res;
     }
 
-    void shousangen() {
+    YakuResult shousangen() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
         int count = 0;
         for (int i = 0; i < 4; i++){
@@ -403,22 +436,26 @@ public:
             count++;
         }
         if (count == 3){
-            totalHan += 2;
-            yakuString += "小三元 ";
+            res.han += 2;
+            res.yaku += "小三元 ";
         }
+        return res;
     }
 
-    void ryanpeikou() {
+    YakuResult ryanpeikou() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
         if (groupTypes[0] == 1 && groupTypes[1] == 1 && groupTypes[2] == 1 && groupTypes[3] == 1 && tileIds[0] == tileIds[1] && tileIds[2] == tileIds[3]){
-            totalHan += 2;
-            yakuString += "两杯口 ";
+            res.han += 2;
+            res.yaku += "两杯口 ";
         }
+        return res;
     }
 
-    void hunroutou() {
+    YakuResult hunroutou() const {
+        YakuResult res;
         bool isHunroutou = true;
         for (auto tileId : fullTiles()){
             if (!Tiles::isYaochu(tileId)){
@@ -427,14 +464,16 @@ public:
             }
         }
         if (isHunroutou){
-            totalHan += 2;
-            yakuString += "混老头 ";
+            res.han += 2;
+            res.yaku += "混老头 ";
         }
+        return res;
     }
 
-    void taiyao() {
+    YakuResult taiyao() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
         bool isChanta = true;
         bool isJunchan = true;
@@ -465,36 +504,40 @@ public:
             }
         }
         if (isJunchan){
-            totalHan += 3;
-            yakuString += "纯全 ";
-            return;
+            res.han += 3;
+            res.yaku += "纯全 ";
+            return res;
         }
         if (isChanta){
-            totalHan += 2;
-            yakuString += "全带 ";
+            res.han += 2;
+            res.yaku += "全带 ";
         }
+        return res;
     }
 
     // yakuman
-    void daisangen() {
+    YakuResult daisangen() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
-        int count = 0;  
+        int count = 0;
         for (int i = 0; i < 4; i++){
             if (tileIds[i] == z5 || tileIds[i] == z6 || tileIds[i] == z7){
                 count++;
             }
         }
         if (count == 3){
-            totalHan += 10000;
-            yakuString += "大三元 ";
+            res.han += 10000;
+            res.yaku += "大三元 ";
         }
+        return res;
     }
 
-    void suushi() {
+    YakuResult suushi() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
         int suushiCount = 0;
         for (auto tileId : fullTiles()){
@@ -503,16 +546,18 @@ public:
             }
         }
         if (suushiCount == 12){ // dai suushi
-            totalHan += 20000;
-            yakuString += "大四喜 ";
+            res.han += 20000;
+            res.yaku += "大四喜 ";
         }
         if (suushiCount == 11){ // shou suushi
-            totalHan += 10000;
-            yakuString += "小四喜 ";
+            res.han += 10000;
+            res.yaku += "小四喜 ";
         }
+        return res;
     }
 
-    void tsuuiisou() {
+    YakuResult tsuuiisou() const {
+        YakuResult res;
         bool isTsuuiisou = true;
         for (auto tileId : fullTiles()){
             if (!(tileId == z1 || tileId == z2 || tileId == z3 || tileId == z4 || tileId == z5 || tileId == z6 || tileId == z7)){
@@ -520,12 +565,14 @@ public:
             }
         }
         if (isTsuuiisou){
-            totalHan += 10000;
-            yakuString += "字一色 ";
+            res.han += 10000;
+            res.yaku += "字一色 ";
         }
+        return res;
     }
 
-    void ryuuiisou() {
+    YakuResult ryuuiisou() const {
+        YakuResult res;
         bool isRyuuiisou = true;
         bool isChinryuusou = true;
         for (auto tileId : fullTiles()){
@@ -537,16 +584,18 @@ public:
             }
         }
         if (isChinryuusou){
-            totalHan += 20000;
-            yakuString += "无发绿一色 ";
+            res.han += 20000;
+            res.yaku += "无发绿一色 ";
         }
         if (isRyuuiisou){
-            totalHan += 10000;
-            yakuString += "绿一色 ";
+            res.han += 10000;
+            res.yaku += "绿一色 ";
         }
+        return res;
     }
 
-    void chinroutou() {
+    YakuResult chinroutou() const {
+        YakuResult res;
         bool isChinroutou = true;
         for (auto tileId : fullTiles()){
             if (!(tileId == m1 || tileId == m9 || tileId == p1 || tileId == p9 || tileId == s1 || tileId == s9)){
@@ -554,14 +603,16 @@ public:
             }
         }
         if (isChinroutou){
-            totalHan += 10000;
-            yakuString += "清老头 ";
+            res.han += 10000;
+            res.yaku += "清老头 ";
         }
+        return res;
     }
 
-    void chuuren() {
+    YakuResult chuuren() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
         bool isChuuren = false;
         bool isChuuren9wait = false;
@@ -569,7 +620,7 @@ public:
         std::array<int, 9> counts;
         for (auto tileId : fullTiles()){
             if (Tiles::suitIndex[tileId] != inferredSuit){
-                return;
+                return res;
             }
             counts[tileId % 9]++;
         }
@@ -583,29 +634,33 @@ public:
             isChuuren = true;
         }
         if (isChuuren9wait){
-            totalHan += 20000;
-            yakuString += "纯正九莲宝灯 ";
-            return;
+            res.han += 20000;
+            res.yaku += "纯正九莲宝灯 ";
+            return res;
         }
         if (isChuuren){
-            totalHan += 10000;
-            yakuString += "九莲宝灯 ";
+            res.han += 10000;
+            res.yaku += "九莲宝灯 ";
         }
+        return res;
     }
 
-    void suuankouTanki() {
+    YakuResult suuankouTanki() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
         if (groupTypes[0] == 0 && groupTypes[1] == 0 && groupTypes[2] == 0 && groupTypes[3] == 0 && waitMeldIndex == 4){
-            totalHan += 20000;
-            yakuString += "四暗刻单骑 ";
-            return;
+            res.han += 20000;
+            res.yaku += "四暗刻单骑 ";
+            return res;
         }
+        return res;
     }
 
     // local yakus
-    void reversibleTiles() {
+    YakuResult reversibleTiles() const {
+        YakuResult res;
         bool isReversible = true;
         for (auto tileId : fullTiles()){
             if (tileId == p1 || tileId == p2 || tileId == p3 || tileId == p4 || tileId == p5 || tileId == p8 || tileId == p9 || tileId == s2 || tileId == s4 || tileId == s6 || tileId == s8 || tileId == s9 || tileId == z5){
@@ -613,12 +668,14 @@ public:
             }
         }
         if (isReversible){
-            totalHan += 1;
-            yakuString += "推不倒 ";
+            res.han += 1;
+            res.yaku += "推不倒 ";
         }
+        return res;
     }
 
-    void tripleRedTiles() {
+    YakuResult tripleRedTiles() const {
+        YakuResult res;
         bool isTripleRed = gameInfo.red5m && gameInfo.red5p && gameInfo.red5s;
         bool hand5m = false, hand5p = false, hand5s = false;
         for (auto tileId : fullTiles()){
@@ -633,12 +690,14 @@ public:
             }
         }
         if (isTripleRed && hand5m && hand5p && hand5s){
-            totalHan += 2;
-            yakuString += "赤三色 ";
+            res.han += 2;
+            res.yaku += "赤三色 ";
         }
+        return res;
     }
 
-    void uumensai() {
+    YakuResult uumensai() const {
+        YakuResult res;
         bool m = false, p = false, s = false, w = false, d = false;
         for (auto tileId : fullTiles()){
             if (Tiles::suitIndex[tileId] == 0){
@@ -660,9 +719,10 @@ public:
             }
         }
         if (m && p && s && w && d){
-            totalHan += 2;
-            yakuString += "五门齐 ";
+            res.han += 2;
+            res.yaku += "五门齐 ";
         }
+        return res;
     }
 
     bool _sanshouku_tsuukan_helper(int tileId1, int tileId2, int tileId3) const {
@@ -682,11 +742,11 @@ public:
         return false;
     }
 
-    void sanshoku_tsuukan() {
+    YakuResult sanshoku_tsuukan() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
-        std::array<int, 4> counts;
         bool isSanshokuTsuukan = false;
         if (groupTypes[0] == 1 && groupTypes[1] == 1 && groupTypes[2] == 1){
             if (_sanshouku_tsuukan_helper(tileIds[0], tileIds[1], tileIds[2])){
@@ -709,9 +769,10 @@ public:
             }
         }
         if (isSanshokuTsuukan){
-            totalHan += 2;
-            yakuString += "三色通贯 ";
+            res.han += 2;
+            res.yaku += "三色通贯 ";
         }
+        return res;
     }
 
     bool _sanrenkou_helper(int tileId1, int tileId2, int tileId3) const {
@@ -721,9 +782,10 @@ public:
         return false;
     }
 
-    void sanrenkou() {
+    YakuResult sanrenkou() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
         bool isSanrenkou = false;
         if (groupTypes[0] == 0 && groupTypes[1] == 0 && groupTypes[2] == 0 && _sanrenkou_helper(tileIds[0], tileIds[1], tileIds[2])){
@@ -739,14 +801,16 @@ public:
             isSanrenkou = true;
         }
         if (isSanrenkou){
-            totalHan += 2;
-            yakuString += "三连刻 ";
+            res.han += 2;
+            res.yaku += "三连刻 ";
         }
+        return res;
     }
 
-    void isshokuSanjun() {
+    YakuResult isshokuSanjun() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
         bool isIsshokuSanjun = false;
         if (groupTypes[0] == 1 && groupTypes[1] == 1 && groupTypes[2] == 1 && tileIds[0] == tileIds[1] && tileIds[1] == tileIds[2]){
@@ -762,53 +826,63 @@ public:
             isIsshokuSanjun = true;
         }
         if (isIsshokuSanjun){
-            totalHan += 2;
-            yakuString += "一色三同顺 ";
+            res.han += 2;
+            res.yaku += "一色三同顺 ";
         }
+        return res;
     }
 
     // local yakuman
-    void suurenkou() {
+    YakuResult suurenkou() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
-        if (groupTypes[0] == 0 && groupTypes[1] == 0 && groupTypes[2] == 0 && groupTypes[3] == 0 && tileIds[0] == tileIds[1] && tileIds[1] == tileIds[2] && tileIds[2] == tileIds[3]){  
-            totalHan += 10000;
-            yakuString += "四连刻 ";
+        if (groupTypes[0] == 0 && groupTypes[1] == 0 && groupTypes[2] == 0 && groupTypes[3] == 0 && tileIds[0] == tileIds[1] && tileIds[1] == tileIds[2] && tileIds[2] == tileIds[3]){
+            res.han += 10000;
+            res.yaku += "四连刻 ";
         }
+        return res;
     }
 
-    void isshokuYonjun() {
+    YakuResult isshokuYonjun() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
-        if (groupTypes[0] == 1 && groupTypes[1] == 1 && groupTypes[2] == 1 && groupTypes[3] == 1 && tileIds[0] == tileIds[1] && tileIds[1] == tileIds[2] && tileIds[2] == tileIds[3]){  
-            totalHan += 10000;
-            yakuString += "一色四顺 ";
+        if (groupTypes[0] == 1 && groupTypes[1] == 1 && groupTypes[2] == 1 && groupTypes[3] == 1 && tileIds[0] == tileIds[1] && tileIds[1] == tileIds[2] && tileIds[2] == tileIds[3]){
+            res.han += 10000;
+            res.yaku += "一色四顺 ";
         }
+        return res;
     }
 
-    void benikujaku() {
+    YakuResult benikujaku() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
-        if (groupTypes[0] == 0 && groupTypes[1] == 0 && groupTypes[2] == 0 && groupTypes[3] == 0 && tileIds[0] == s1 && tileIds[1] == s5 && tileIds[2] == s7 && tileIds[3] == s9 && pairTileId == z7){  
-            totalHan += 10000;
-            yakuString += "红孔雀 ";
+        if (groupTypes[0] == 0 && groupTypes[1] == 0 && groupTypes[2] == 0 && groupTypes[3] == 0 && tileIds[0] == s1 && tileIds[1] == s5 && tileIds[2] == s7 && tileIds[3] == s9 && pairTileId == z7){
+            res.han += 10000;
+            res.yaku += "红孔雀 ";
         }
+        return res;
     }
 
-    void kouitten() {
+    YakuResult kouitten() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
-        if (groupTypes[0] == 0 && groupTypes[1] == 0 && groupTypes[2] == 0 && groupTypes[3] == 0 && tileIds[0] == s2 && tileIds[1] == s3 && tileIds[2] == s4 && tileIds[3] == s6 && pairTileId == z7){  
-            totalHan += 10000;
-            yakuString += "红一点 ";
+        if (groupTypes[0] == 0 && groupTypes[1] == 0 && groupTypes[2] == 0 && groupTypes[3] == 0 && tileIds[0] == s2 && tileIds[1] == s3 && tileIds[2] == s4 && tileIds[3] == s6 && pairTileId == z7){
+            res.han += 10000;
+            res.yaku += "红一点 ";
         }
+        return res;
     }
 
-    void kokuiisou() {
+    YakuResult kokuiisou() const {
+        YakuResult res;
         bool isKokuiisou = true;
         for (auto tileId : fullTiles()){
             if (!(tileId == p2 || tileId == p4 || tileId == p8 || tileId == z1 || tileId == z2 || tileId == z3 || tileId == z4)){
@@ -816,66 +890,74 @@ public:
             }
         }
         if (isKokuiisou){
-            totalHan += 10000;
-            yakuString += "黑一色 ";
+            res.han += 10000;
+            res.yaku += "黑一色 ";
         }
+        return res;
     }
 
-    void daiXrin() {
+    YakuResult daiXrin() const {
+        YakuResult res;
         if (isChiitoitsu){
             int inferredSuit = Tiles::suitIndex[tileIds[0]];
             for (auto tileId : fullTiles()){
                 if (Tiles::suitIndex[tileId] != inferredSuit){
-                    return;
+                    return res;
                 }
             }
             if (tileIds[0] == 1 && tileIds[1] == 2 && tileIds[2] == 3 && tileIds[3] == 4 && tileIds[4] == 5 && tileIds[5] == 6 && tileIds[6] == 7){
-                totalHan += 10000;
+                res.han += 10000;
                 if (inferredSuit == 0){
-                    yakuString += "大数邻 ";
+                    res.yaku += "大数邻 ";
                 }else if (inferredSuit == 1){
-                    yakuString += "大车轮 ";
+                    res.yaku += "大车轮 ";
                 }else if (inferredSuit == 2){
-                    yakuString += "大竹林 ";
+                    res.yaku += "大竹林 ";
                 }
             }
         }
+        return res;
     }
 
-    void hyakumannGoku() {
+    YakuResult hyakumannGoku() const {
+        YakuResult res;
         int sum = 0;
         for (auto tileId : fullTiles()){
             if (Tiles::suitIndex[tileId] != 0){
-                return;
+                return res;
             }
             sum += (tileId+1);
         }
         if (sum >= 100){
-            totalHan += 10000;
-            yakuString += "百万石 ";
+            res.han += 10000;
+            res.yaku += "百万石 ";
         }
+        return res;
     }
 
-    void goldenGateBridge() {
+    YakuResult goldenGateBridge() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
-        if (Tiles::suitIndex[tileIds[0]] == Tiles::suitIndex[tileIds[1]] && Tiles::suitIndex[tileIds[1]] == Tiles::suitIndex[tileIds[2]] && Tiles::suitIndex[tileIds[2]] == Tiles::suitIndex[tileIds[3]]){  
+        if (Tiles::suitIndex[tileIds[0]] == Tiles::suitIndex[tileIds[1]] && Tiles::suitIndex[tileIds[1]] == Tiles::suitIndex[tileIds[2]] && Tiles::suitIndex[tileIds[2]] == Tiles::suitIndex[tileIds[3]]){
             if (tileIds[0] % 9 == 0 && tileIds[1] % 9 == 2 && tileIds[2] % 9 == 4 && tileIds[3] % 9 == 6){
-                totalHan += 10000;
-                yakuString += "金门桥 ";
+                res.han += 10000;
+                res.yaku += "金门桥 ";
             }
         }
+        return res;
     }
 
-    void touhokuShinkansen() {
+    YakuResult touhokuShinkansen() const {
+        YakuResult res;
         if (isChiitoitsu){
-            return;
+            return res;
         }
         bool hasZ1 = false, hasZ4 = false;
         if (_ittsuu_helper()){
             for (auto tileId : fullTiles()){
-                if (tileId == z1){  
+                if (tileId == z1){
                     hasZ1 = true;
                 }
                 if (tileId == z4){
@@ -883,23 +965,29 @@ public:
                 }
             }
             if (hasZ1 && hasZ4){
-                totalHan += 10000;
-                yakuString += "东北新干线 ";
+                res.han += 10000;
+                res.yaku += "东北新干线 ";
             }
         }
+        return res;
     }
 
-    void daichisei() {
+    YakuResult daichisei() const {
+        YakuResult res;
         if (isChiitoitsu){
             for (auto tileId : fullTiles()){
                 if (tileId < z1){
-                    return;
+                    return res;
                 }
             }
-            totalHan += 20000;
-            yakuString += "大七星 ";
+            res.han += 20000;
+            res.yaku += "大七星 ";
         }
-    } 
+        return res;
+    }
 };
+
+
+
 
 

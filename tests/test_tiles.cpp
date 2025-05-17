@@ -21,8 +21,8 @@ int main(){
     hand.pairTileId = z3; // non-value pair
     hand.waitMeldIndex = 0;
     hand.waitTileId = m3;
-    hand.pinfu();
-    assert(hand.totalHan == 1);
+    auto res = hand.pinfu();
+    assert(res.han == 1);
 
     std::cout << "Tiles tests passed\n";
     return 0;

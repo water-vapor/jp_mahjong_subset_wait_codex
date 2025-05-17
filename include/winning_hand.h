@@ -9,7 +9,7 @@ public:
     std::array<bool, 4> groupTypes; // 0 -> triplets, 1 -> sequences
     int pairTileId = 0;
     bool isChiitoitsu = false;
-    int waitGroup = -1;
+    int waitMeldIndex = -1;
     int waitTileId = -1;
 
     int totalHan = 0;
@@ -26,10 +26,9 @@ public:
         }
         else{
             for (int i = 0; i < 4; i++){
-                if (groupTypes[i]){
+                if (groupTypes[i] == 0){
                     t.add(tileIds[i], 3);
-                }
-                else{
+                } else {
                     int currentTileId = tileIds[i];
                     t.add(currentTileId);
                     t.add(currentTileId+1);
@@ -83,7 +82,7 @@ public:
         dora();
         tanyao();
         pinfu();
-        lipeikou();
+        iipeikou();
         chitoitsu();
         toitoi();
         sanshoku();
@@ -212,8 +211,8 @@ public:
             }
         }
         if (isPinfu){
-            bool leftWait = waitTileId == tileIds[waitGroup] && (Tiles::fieldIndex[waitTileId] == Tiles::fieldIndex[waitTileId + 3]);
-            bool rightWait = waitTileId == tileIds[waitGroup] + 2 && (Tiles::fieldIndex[waitTileId] == Tiles::fieldIndex[waitTileId - 3]);
+            bool leftWait = waitTileId == tileIds[waitMeldIndex] && (Tiles::suitIndex[waitTileId] == Tiles::suitIndex[waitTileId + 3]);
+            bool rightWait = waitTileId == tileIds[waitMeldIndex] + 2 && (Tiles::suitIndex[waitTileId] == Tiles::suitIndex[waitTileId - 3]);
             if (!leftWait && !rightWait){
                 isPinfu = false;
             }
@@ -224,7 +223,7 @@ public:
         }
     }
 
-    void lipeikou() {
+    void iipeikou() {
         if (isChiitoitsu){
             return;
         }
@@ -300,24 +299,24 @@ public:
         }
         std::array<int, 4> counts;
         for (int i = 0; i < 4; i++){
-            counts[Tiles::fieldIndex[tileIds[i]]]++;
+            counts[Tiles::suitIndex[tileIds[i]]]++;
         }
-        int group = -1;
+        int suit = -1;
         if (counts[0] >= 3){
-            group = 0;
+            suit = 0;
         }
         else if (counts[1] >= 3){
-            group = 1;
+            suit = 1;
         }
         else if (counts[2] >= 3){
-            group = 2;
+            suit = 2;
         }
         else{
             return false;
         }
         bool seq1 = false, seq2 = false, seq3 = false;
         for (int i = 0; i < 4; i++){
-            if (Tiles::fieldIndex[tileIds[i]] == group){
+            if (Tiles::suitIndex[tileIds[i]] == suit){
                 if (groupTypes[i] == 1 && tileIds[i] % 9 == 0){
                     seq1 = true;
                 }
@@ -346,7 +345,7 @@ public:
         std::array<int, 4> counts;
         int han = 0;
         for (auto tileId : fullTiles()){
-            counts[Tiles::fieldIndex[tileId]]++;
+            counts[Tiles::suitIndex[tileId]]++;
         }
         if (counts[0] == 0 && counts[1] == 0){
             if (counts[3] == 0){
@@ -380,7 +379,7 @@ public:
     void sanankou() {
         int ankou_count = 0;
         for (int i = 0; i < 4; i++){
-            if (groupTypes[i] == 0 && waitGroup != i){
+            if (groupTypes[i] == 0 && waitMeldIndex != i){
                 ankou_count++;
             }
         }
@@ -445,7 +444,7 @@ public:
                     isChanta = false;
                     isJunchan = false;
                 }else{
-                    if (Tiles::fieldIndex[tileIds[i]] == 3){
+                    if (Tiles::suitIndex[tileIds[i]] == 3){
                         isJunchan = false;
                     }
                 }
@@ -461,7 +460,7 @@ public:
             isChanta = false;
             isJunchan = false;
         }else{
-            if (Tiles::fieldIndex[pairTileId] == 3){
+            if (Tiles::suitIndex[pairTileId] == 3){
                 isJunchan = false;
             }
         }
@@ -566,10 +565,10 @@ public:
         }
         bool isChuuren = false;
         bool isChuuren9wait = false;
-        int inferredSuit = Tiles::fieldIndex[tileIds[0]];
+        int inferredSuit = Tiles::suitIndex[tileIds[0]];
         std::array<int, 9> counts;
         for (auto tileId : fullTiles()){
-            if (Tiles::fieldIndex[tileId] != inferredSuit){
+            if (Tiles::suitIndex[tileId] != inferredSuit){
                 return;
             }
             counts[tileId % 9]++;
@@ -598,7 +597,7 @@ public:
         if (isChiitoitsu){
             return;
         }
-        if (groupTypes[0] == 0 && groupTypes[1] == 0 && groupTypes[2] == 0 && groupTypes[3] == 0 && waitGroup == 4){
+        if (groupTypes[0] == 0 && groupTypes[1] == 0 && groupTypes[2] == 0 && groupTypes[3] == 0 && waitMeldIndex == 4){
             totalHan += 20000;
             yakuString += "四暗刻单骑 ";
             return;
@@ -642,16 +641,16 @@ public:
     void uumensai() {
         bool m = false, p = false, s = false, w = false, d = false;
         for (auto tileId : fullTiles()){
-            if (Tiles::fieldIndex[tileId] == 0){
+            if (Tiles::suitIndex[tileId] == 0){
                 m = true;
             }
-            if (Tiles::fieldIndex[tileId] == 1){
+            if (Tiles::suitIndex[tileId] == 1){
                 p = true;
             }
-            if (Tiles::fieldIndex[tileId] == 2){
+            if (Tiles::suitIndex[tileId] == 2){
                 s = true;
             }
-            if (Tiles::fieldIndex[tileId] == 3){
+            if (Tiles::suitIndex[tileId] == 3){
                 if (tileId == z1 || tileId == z2 || tileId == z3 || tileId == z4){
                     w = true;
                 }
@@ -672,9 +671,9 @@ public:
         numCounts[(tileId1 % 9)/3]++;
         numCounts[(tileId2 % 9)/3]++;
         numCounts[(tileId3 % 9)/3]++;
-        suitCounts[Tiles::fieldIndex[tileId1]]++;
-        suitCounts[Tiles::fieldIndex[tileId2]]++;
-        suitCounts[Tiles::fieldIndex[tileId3]]++;
+        suitCounts[Tiles::suitIndex[tileId1]]++;
+        suitCounts[Tiles::suitIndex[tileId2]]++;
+        suitCounts[Tiles::suitIndex[tileId3]]++;
         if (numCounts[0] == 1 && numCounts[1] == 1 && numCounts[2] == 1){
             if (suitCounts[0] == 1 && suitCounts[1] == 1 && suitCounts[2] == 1){
                 return true;
@@ -716,7 +715,7 @@ public:
     }
 
     bool _sanrenkou_helper(int tileId1, int tileId2, int tileId3) const {
-        if (Tiles::fieldIndex[tileId1] == Tiles::fieldIndex[tileId2] && Tiles::fieldIndex[tileId2] == Tiles::fieldIndex[tileId3] && tileId1 + 1 == tileId2 && tileId2 + 1 == tileId3 && tileId3 < z1){
+        if (Tiles::suitIndex[tileId1] == Tiles::suitIndex[tileId2] && Tiles::suitIndex[tileId2] == Tiles::suitIndex[tileId3] && tileId1 + 1 == tileId2 && tileId2 + 1 == tileId3 && tileId3 < z1){
             return true;
         }
         return false;
@@ -824,9 +823,9 @@ public:
 
     void daiXrin() {
         if (isChiitoitsu){
-            int inferredSuit = Tiles::fieldIndex[tileIds[0]];
+            int inferredSuit = Tiles::suitIndex[tileIds[0]];
             for (auto tileId : fullTiles()){
-                if (Tiles::fieldIndex[tileId] != inferredSuit){
+                if (Tiles::suitIndex[tileId] != inferredSuit){
                     return;
                 }
             }
@@ -846,7 +845,7 @@ public:
     void hyakumannGoku() {
         int sum = 0;
         for (auto tileId : fullTiles()){
-            if (Tiles::fieldIndex[tileId] != 0){
+            if (Tiles::suitIndex[tileId] != 0){
                 return;
             }
             sum += (tileId+1);
@@ -861,7 +860,7 @@ public:
         if (isChiitoitsu){
             return;
         }
-        if (Tiles::fieldIndex[tileIds[0]] == Tiles::fieldIndex[tileIds[1]] && Tiles::fieldIndex[tileIds[1]] == Tiles::fieldIndex[tileIds[2]] && Tiles::fieldIndex[tileIds[2]] == Tiles::fieldIndex[tileIds[3]]){  
+        if (Tiles::suitIndex[tileIds[0]] == Tiles::suitIndex[tileIds[1]] && Tiles::suitIndex[tileIds[1]] == Tiles::suitIndex[tileIds[2]] && Tiles::suitIndex[tileIds[2]] == Tiles::suitIndex[tileIds[3]]){  
             if (tileIds[0] % 9 == 0 && tileIds[1] % 9 == 2 && tileIds[2] % 9 == 4 && tileIds[3] % 9 == 6){
                 totalHan += 10000;
                 yakuString += "金门桥 ";

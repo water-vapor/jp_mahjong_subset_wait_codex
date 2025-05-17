@@ -249,10 +249,10 @@ void initGameStatus(std::string_view doraIndicator, Tiles &akadoraIndicators, st
     if (akadoraIndicators.getCount(m5) == 1){
         gameInfo.red5m = true;
     }
-    else if (akadoraIndicators.getCount(p5) == 1){
+    if (akadoraIndicators.getCount(p5) == 1){
         gameInfo.red5p = true;
     }
-    else if (akadoraIndicators.getCount(s5) == 1){
+    if (akadoraIndicators.getCount(s5) == 1){
         gameInfo.red5s = true;
     }
     int doraIndicatorTileId = Tiles::tileIndex(doraIndicator);

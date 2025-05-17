@@ -211,8 +211,8 @@ public:
             }
         }
         if (isPinfu){
-            bool leftWait = waitTileId == tileIds[waitMeldIndex] && (Tiles::suitIndex[waitTileId] == Tiles::suitIndex[waitTileId + 3]);
-            bool rightWait = waitTileId == tileIds[waitMeldIndex] + 2 && (Tiles::suitIndex[waitTileId] == Tiles::suitIndex[waitTileId - 3]);
+            bool leftWait = waitTileId == tileIds[waitMeldIndex] && (tileIds[waitMeldIndex] % 9 != 0);
+            bool rightWait = waitTileId == tileIds[waitMeldIndex] + 2 && ((tileIds[waitMeldIndex] + 2) % 9 != 8);
             if (!leftWait && !rightWait){
                 isPinfu = false;
             }
@@ -608,7 +608,7 @@ public:
     void reversibleTiles() {
         bool isReversible = true;
         for (auto tileId : fullTiles()){
-            if (tileId == p1 || tileId == p2 || tileId == p3 || tileId == p4 || tileId == p5 || tileId == p8 || tileId == p9 || tileId == s2 || tileId == s4 || tileId == s6 || tileId == s8 || tileId == s9 || tileId == 5z){
+            if (tileId == p1 || tileId == p2 || tileId == p3 || tileId == p4 || tileId == p5 || tileId == p8 || tileId == p9 || tileId == s2 || tileId == s4 || tileId == s6 || tileId == s8 || tileId == s9 || tileId == z5){
                 isReversible = false;
             }
         }

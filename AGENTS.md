@@ -1,6 +1,7 @@
 # Setup
- - This is a cpp project that requires no dependencies and can be compiled directly. If you later changed it to a multi-file project, you can change this build instruction accordingly.
-
+ - This is a C++ project with no external dependencies.
+ - Build the main binary with `make`.
+ - Run unit tests with `make test`.
 
 # Problem Statement
  - You are playing japanese mahjong in a special setup.

@@ -60,7 +60,7 @@ public:
     }
 
     // tileId: 0=man,1=pin,2=sou,3=honor
-    static constexpr uint8_t fieldIndex[34] = {
+    static constexpr uint8_t suitIndex[34] = {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
         2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3};
 
@@ -101,7 +101,7 @@ public:
 
     bool add(int tileId, int count = 1)
     {
-        auto idx = fieldIndex[tileId];
+        auto idx = suitIndex[tileId];
         auto s = shiftAmount[tileId];
         auto &f = this->*fieldPtr[idx];
 
@@ -122,7 +122,7 @@ public:
 
     bool remove(int tileId, int count = 1)
     {
-        auto idx = fieldIndex[tileId];
+        auto idx = suitIndex[tileId];
         auto s = shiftAmount[tileId];
         auto &f = this->*fieldPtr[idx];
 
@@ -143,7 +143,7 @@ public:
 
     int getCount(int tileId) const
     {
-        auto idx = fieldIndex[tileId];
+        auto idx = suitIndex[tileId];
         auto s = shiftAmount[tileId];
         auto f = (this->*fieldPtr[idx]);
         return int((f >> s) & 0x7u);
@@ -256,11 +256,11 @@ void initGameStatus(std::string_view doraIndicator, Tiles &akadoraIndicators, st
         gameInfo.red5s = true;
     }
     int doraIndicatorTileId = Tiles::tileIndex(doraIndicator);
-    int suit = Tiles::fieldIndex[doraIndicatorTileId];
-    int rank = doraIndicatorTileId - (suit * 9);
-    if (suit < 3) {
+    int suitIdx = Tiles::suitIndex[doraIndicatorTileId];
+    int rank = doraIndicatorTileId - (suitIdx * 9);
+    if (suitIdx < 3) {
         rank = (rank + 1) % 9;
-        gameInfo.doraTileId = (suit * 9) + rank;
+        gameInfo.doraTileId = (suitIdx * 9) + rank;
     } else {
         if (rank < 4) {
             rank = (rank + 1) % 4;

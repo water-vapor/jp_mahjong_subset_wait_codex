@@ -114,7 +114,7 @@ public:
         addResult(dora());
         addResult(tanyao());
         addResult(pinfu());
-        addResult(iipeikou());
+        addResult(peikou());
         addResult(chitoitsu());
         addResult(toitoi());
         addResult(sanshoku());
@@ -122,7 +122,6 @@ public:
         addResult(hon_chinitsu());
         addResult(sanankou());
         addResult(shousangen());
-        addResult(ryanpeikou());
         addResult(hunroutou());
         addResult(taiyao());
         // local yakus

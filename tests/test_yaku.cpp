@@ -300,28 +300,29 @@ void test_dora(){
     assert(bad.dora().han == 0);
 }
 
-void test_iipeikou(){
+void test_peikou_single(){
     resetGame();
     WinningHand h{};
     h.tileIds = {m1,m1,m5,m7,0,0,0};
     h.groupTypes = {1,1,0,0};
     h.pairTileId = z1;
-    assert(h.iipeikou().han == 1);
+    assert(h.peikou().han == 1);
     WinningHand bad = h;
     bad.tileIds[1] = m2;
-    assert(bad.iipeikou().han == 0);
+    assert(bad.peikou().han == 0);
 }
 
-void test_ryanpeikou(){
+void test_peikou_double(){
     resetGame();
     WinningHand h{};
     h.tileIds = {m1,m1,m4,m4,0,0,0};
     h.groupTypes = {1,1,1,1};
     h.pairTileId = z1;
-    assert(h.ryanpeikou().han == 3);
+    assert(h.peikou().han == 3);
     WinningHand bad = h;
+    bad.tileIds[1] = m2;
     bad.tileIds[2] = m5;
-    assert(bad.ryanpeikou().han == 0);
+    assert(bad.peikou().han == 0);
 }
 
 void test_hunroutou(){
@@ -582,8 +583,8 @@ int main(){
     test_winds();
     test_winds_same();
     test_dora();
-    test_iipeikou();
-    test_ryanpeikou();
+    test_peikou_single();
+    test_peikou_double();
     test_hunroutou();
     test_taiyao();
     test_chuuren();

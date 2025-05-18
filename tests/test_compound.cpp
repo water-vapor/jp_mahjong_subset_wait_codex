@@ -32,7 +32,7 @@ void compound_toitoi_winds(){
     assert(h.totalHan == 5);
 }
 
-void compound_iipeikou_pinfu(){
+void compound_peikou_pinfu(){
     resetGame();
     WinningHand h{};
     h.tileIds = {m3,m3,m6,p5,0,0,0};
@@ -56,7 +56,7 @@ void compound_honitsu_toitoi(){
     assert(h.totalHan == 7);
 }
 
-void compound_ryanpeikou(){
+void compound_peikou_double(){
     resetGame();
     WinningHand h{};
     h.tileIds = {m3,m3,p5,p5,0,0,0};
@@ -126,9 +126,9 @@ void compound_kokuiisou(){
 int main(){
     compound_pinfu_tanyao();
     compound_toitoi_winds();
-    compound_iipeikou_pinfu();
+    compound_peikou_pinfu();
     compound_honitsu_toitoi();
-    compound_ryanpeikou();
+    compound_peikou_double();
     compound_ittsuu();
     compound_sanshoku();
     compound_chiitoitsu();

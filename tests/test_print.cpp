@@ -20,10 +20,13 @@ int main(){
     std::cout.rdbuf(orig);
 
     std::string out = oss.str();
-    // Should include only the positive-han hand and label with "番"
+    // Output should contain both hands due to the wait count section
     assert(out.find(h2.toString()) != std::string::npos);
-    assert(out.find(h1.toString()) == std::string::npos);
+    assert(out.find(h1.toString()) != std::string::npos);
+    // Verify localization and separator
     assert(out.find("番") != std::string::npos);
+    assert(out.find("-----") != std::string::npos);
+    // Ensure the English word "han" is not printed
     assert(out.find("han") == std::string::npos);
 
     std::cout << "Print tests passed\n";

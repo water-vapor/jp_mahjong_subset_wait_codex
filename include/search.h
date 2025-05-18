@@ -234,17 +234,31 @@ inline void searchHands(const Tiles &superset, ResultMap &res) {
 inline void printResults(const ResultMap &res) {
     struct Item { Tiles hand; WaitEntry entry; };
     std::vector<Item> all;
-    for(auto const &p:res) {
-        for(auto const &kv:p.second) all.push_back({p.first, kv.second});
+    for (auto const &p : res) {
+        for (auto const &kv : p.second) all.push_back({p.first, kv.second});
     }
-    std::sort(all.begin(), all.end(), [](const Item&a,const Item&b){
-        return a.entry.han>b.entry.han;
+    std::sort(all.begin(), all.end(), [](const Item &a, const Item &b) {
+        return a.entry.han > b.entry.han;
     });
-    for(auto const &it:all) {
+    for (auto const &it : all) {
         if (it.entry.han == 0) continue; // Skip zero-han results
-        std::cout << it.hand.toString() << " waiting " << tileToString(it.entry.waitTile)
-                  << ' ' << it.entry.han << "番 " << it.entry.yaku
-                  << "\n";
+        std::cout << it.hand.toString() << " waiting "
+                  << tileToString(it.entry.waitTile) << ' ' << it.entry.han
+                  << "番 " << it.entry.yaku << "\n";
+    }
+
+    std::cout << "-----\n"; // separator between sorting outputs
+
+    struct CountItem { Tiles hand; size_t count; };
+    std::vector<CountItem> counts;
+    for (auto const &p : res) {
+        counts.push_back({p.first, p.second.size()});
+    }
+    std::sort(counts.begin(), counts.end(), [](const CountItem &a, const CountItem &b) {
+        return a.count > b.count;
+    });
+    for (auto const &c : counts) {
+        std::cout << c.hand.toString() << ' ' << c.count << "面待ち\n";
     }
 }
 

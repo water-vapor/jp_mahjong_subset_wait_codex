@@ -13,7 +13,7 @@
  - The testing or yaku, yakuman, local yakus are implemented as methods of winning hands.
  - The CLI reading is implemented. It takes the superset (of tiles), dora indicator, aka dora presence in the tiles, and the prevailing and seat winds.
  - Yaku checking functions now return a `YakuResult` struct and are aggregated through `addResult`.
- - A small unit test for basic tile logic exists in `tests/test_tiles.cpp`.
+ - Unit tests cover tiles and yaku evaluation. See `tests/test_tiles.cpp`, `tests/test_yaku.cpp` and `tests/test_compound.cpp`.
 
 # What has not been done
  - The result storing map. It should contain the 13-hand as key, and for each value, you need to have a nested map (since there can be multiple waits) containing the tile to wait (perhaps as the key), score and yaku string (as the value). Note that if there are multiple interpretations of the same 14-tile set, they will result in different `WinningHand` instances, but should not duplicate in this map since the keys are identical.
@@ -25,8 +25,15 @@
  - The final sorting and pretty printing system
 
 # Contributor Guide
-1. You can reorganize the project into multiple files following C++ project conventions. If there are variable, files naming or English issues, you should fix them (including this file)
-2. You should write test cases for small components, especially for yaku related testing, as they are prone to errors.
+1. The project is now split across headers and sources. When adding new files, match the existing naming style and keep code well commented.
+2. Unit tests already cover tiles, yaku and compound scenarios. Extend the test suite whenever new logic is introduced.
 3. Yaku methods already return a `YakuResult`. Ensure new yaku related code follows this pattern instead of mutating members directly.
 4. You should check for duplicated or inelegant code. If there are better and cleaner ways to write it, you can change it.
-5. Consider adding a `.gitignore` file to exclude build artifacts such as `main` and test binaries.
+5. A `.gitignore` file already excludes build artifacts (`main` and test binaries`). Keep it up to date when adding new tools.
+
+# Next Steps
+1. **Result storage map** – create a dedicated type (e.g. `ResultMap`) that maps a normalized 13‑tile set to a list of waits. Each wait entry should record the winning tile, total Han, fu and a formatted yaku list. This avoids duplicate keys when different `WinningHand` objects share the same tiles.
+2. **Search algorithm** – implement the DFS in three phases. First, check for Kokushi and its 13‑way wait. Second, look for seven pairs by enumerating all 6‑pair combinations. Finally, enumerate regular hands by recursively selecting groups and a pair. Factor the logic into helper functions so that `main.cpp` only orchestrates the search.
+3. **Sorting & output** – after collecting all results, sort them by Han (descending) and then by fu. Provide a helper that converts a tile set into an easily readable string so that printing each result becomes trivial.
+4. **Refactor headers** – `winning_hand.h` mixes data structures with yaku logic. Split the yaku checks into their own headers (e.g. `yaku_basic.h`, `yaku_yakuman.h`) and keep the `WinningHand` class focused on representation.
+5. **Documentation** – write a short README covering build/test commands and a sample invocation. As features grow, keep the documentation up to date.

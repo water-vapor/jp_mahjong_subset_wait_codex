@@ -3,3 +3,4 @@ main
 tests/test_tiles
 tests/test_yaku
 tests/test_compound
+tests/test_search

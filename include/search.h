@@ -6,6 +6,7 @@
 #include <string>
 #include <algorithm>
 #include <unordered_set>
+#include <iomanip>
 
 struct WaitEntry {
     int waitTile = -1;    // tile needed to win
@@ -22,6 +23,15 @@ inline std::string tileToString(int tileId) {
     int suit = Tiles::suitIndex[tileId];
     int rank = tileId - suit * 9 + 1;
     return std::to_string(rank) + suits[suit];
+}
+
+inline size_t digits(size_t v){
+    size_t d = 1;
+    while (v >= 10){
+        v /= 10;
+        ++d;
+    }
+    return d;
 }
 
 // ----- Targeted generation based searching -----
@@ -259,27 +269,48 @@ inline void printResults(const ResultMap &res, size_t limit = 0) {
         return a.waits[0].han > b.waits[0].han;
     });
 
+    // Pre-compute column widths for aligned output
+    size_t handWidth = 0, waitWidth = 0, countWidth = 0, hanWidth = 0;
+    std::vector<std::string> waitStrs;
+    waitStrs.reserve(infos.size());
+    for (auto const &hi : infos) {
+        std::string hs = hi.hand.toString();
+        handWidth = std::max(handWidth, hs.size());
+        std::string ws;
+        for (size_t i = 0; i < hi.tiles.size(); ++i) {
+            if (i) ws.push_back(' ');
+            ws += tileToString(hi.tiles[i]);
+        }
+        waitWidth = std::max(waitWidth, ws.size());
+        countWidth = std::max(countWidth, digits(hi.tiles.size()));
+        hanWidth = std::max(hanWidth, digits(size_t(hi.waits[0].han)));
+        waitStrs.push_back(std::move(ws));
+    }
+
     size_t printed = 0;
     std::unordered_set<Tiles, Tiles::Hash> printedHands;
-    for (auto const &hi : infos) {
+    for (size_t idx = 0; idx < infos.size(); ++idx) {
+        const auto &hi = infos[idx];
         if (limit && printed >= limit) break;
         std::string handStr = hi.hand.toString();
-        std::cout << handStr << ' ';
-        for (size_t i = 0; i < hi.tiles.size(); ++i) {
-            if (i) std::cout << ' ';
-            std::cout << tileToString(hi.tiles[i]);
-        }
-        std::cout << ' ' << hi.tiles.size() << "面待ち ";
+        const std::string &waitStr = waitStrs[idx];
+        std::cout << std::left << std::setw(handWidth) << handStr << ' '
+                  << std::left << std::setw(waitWidth) << waitStr << ' '
+                  << std::right << std::setw(countWidth) << hi.tiles.size()
+                  << "面待ち ";
         const WaitEntry &best = hi.waits[0];
-        std::cout << tileToString(best.waitTile) << ' ' << best.han
+        std::cout << std::left << std::setw(2) << tileToString(best.waitTile) << ' '
+                  << std::right << std::setw(hanWidth) << best.han
                   << "番 " << best.yaku << "\n";
         ++printed;
         printedHands.insert(hi.hand);
-        std::string indent(handStr.size() + 1, ' ');
+        std::string indent(handWidth + 1 + waitWidth + 1 + countWidth + 4, ' ');
         for (size_t i = 1; i < hi.waits.size(); ++i) {
             const WaitEntry &we = hi.waits[i];
-            std::cout << indent << tileToString(we.waitTile) << ' '
-                      << we.han << "番 " << we.yaku << "\n";
+            std::cout << indent << std::left << std::setw(2)
+                      << tileToString(we.waitTile) << ' '
+                      << std::right << std::setw(hanWidth) << we.han
+                      << "番 " << we.yaku << "\n";
         }
     }
 
@@ -294,27 +325,43 @@ inline void printResults(const ResultMap &res, size_t limit = 0) {
     std::sort(counts.begin(), counts.end(), [](const CountItem &a, const CountItem &b) {
         return a.count > b.count;
     });
-    printed = 0;
+    // Column widths for the second section
+    size_t handWidth2 = 0, waitWidth2 = 0, countWidth2 = 0;
+    struct CInfo { const CountItem *item; std::string handStr; std::string waitStr; const WaitEntry *best; std::vector<int> tiles; };
+    std::vector<CInfo> cinfo;
     for (auto const &c : counts) {
-        std::vector<int> tiles;
-        tiles.reserve(c.waits->size());
-        const WaitEntry *best = nullptr;
+        CInfo ci; ci.item = &c; ci.handStr = c.hand.toString();
+        ci.tiles.reserve(c.waits->size());
+        ci.best = nullptr;
         for (auto const &kv : *c.waits) {
-            tiles.push_back(kv.first);
-            if (!best || kv.second.han > best->han) best = &kv.second;
+            ci.tiles.push_back(kv.first);
+            if (!ci.best || kv.second.han > ci.best->han) ci.best = &kv.second;
         }
-        if (!best || best->han == 0) continue; // skip configurations with zero-han waits only
-        std::sort(tiles.begin(), tiles.end());
-        std::cout << c.hand.toString() << ' ';
-        for (size_t i = 0; i < tiles.size(); ++i) {
-            if (i) std::cout << ' ';
-            std::cout << tileToString(tiles[i]);
+        if (!ci.best || ci.best->han == 0) continue;
+        std::sort(ci.tiles.begin(), ci.tiles.end());
+        ci.waitStr.clear();
+        for (size_t i = 0; i < ci.tiles.size(); ++i) {
+            if (i) ci.waitStr.push_back(' ');
+            ci.waitStr += tileToString(ci.tiles[i]);
         }
-        std::cout << ' ' << c.count << "面待ち";
-        std::cout << ' ' << tileToString(best->waitTile) << ' '
-                  << best->han << "番 " << best->yaku;
-        std::cout << "\n";
-        if (limit && ++printed >= limit) break;
+        handWidth2 = std::max(handWidth2, ci.handStr.size());
+        waitWidth2 = std::max(waitWidth2, ci.waitStr.size());
+        countWidth2 = std::max(countWidth2, digits(ci.item->count));
+        hanWidth = std::max(hanWidth, digits(size_t(ci.best->han)));
+        cinfo.push_back(std::move(ci));
+    }
+
+    printed = 0;
+    for (auto const &ci : cinfo) {
+        if (limit && printed >= limit) break;
+        std::cout << std::left << std::setw(handWidth2) << ci.handStr << ' '
+                  << std::left << std::setw(waitWidth2) << ci.waitStr << ' '
+                  << std::right << std::setw(countWidth2) << ci.item->count
+                  << "面待ち ";
+        std::cout << std::left << std::setw(2) << tileToString(ci.best->waitTile) << ' '
+                  << std::right << std::setw(hanWidth) << ci.best->han
+                  << "番 " << ci.best->yaku << "\n";
+        ++printed;
     }
 }
 

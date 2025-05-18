@@ -152,6 +152,10 @@ public:
         addResult(kouitten());
         addResult(kokuiisou());
         addResult(daiXrin());
+        addResult(hyakumannGoku());
+        addResult(goldenGateBridge());
+        addResult(touhokuShinkansen());
+        addResult(daichisei());
     }
 
 #include "yaku_basic.h"

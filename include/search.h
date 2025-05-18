@@ -179,7 +179,51 @@ inline void searchSevenPairsForTile(const Tiles &superset, int winTile, ResultMa
     dfsSevenPairs(0, 0, cnt, used, cur, winTile, res);
 }
 
+inline void searchKokushi(const Tiles &superset, ResultMap &res) {
+    std::array<int,34> cnt{};
+    for (int i = 0; i < 34; ++i) cnt[i] = superset.getCount(i);
+    constexpr int yaochu[13] = {m1, m9, p1, p9, s1, s9, z1, z2, z3, z4, z5, z6, z7};
+
+    int present = 0;
+    for (int t : yaochu) if (cnt[t] > 0) ++present;
+    bool allPresent = present == 13;
+    if (present < 12) return;
+
+    if (allPresent) {
+        std::array<int,34> need{};
+        for (int t : yaochu) need[t] = 1;
+        Tiles partial = buildTiles(need);
+        for (int w : yaochu) {
+            if (cnt[w] >= 4) continue; // cannot draw a 5th copy
+            WaitEntry we{w, 20000, "国士无双十三面"};
+            auto &mp = res[partial];
+            if (mp.find(w) == mp.end()) mp[w] = we;
+        }
+    }
+
+    for (int p : yaochu) {
+        if (cnt[p] < 2) continue;
+        for (int w : yaochu) {
+            if (allPresent && w == p) continue; // handled by 13-sided case
+            if (cnt[w] >= 4) continue;
+            std::array<int,34> need{};
+            for (int t : yaochu) need[t] = 1;
+            need[p]++;
+            need[w]--;
+            bool ok = true;
+            for (int t : yaochu) {
+                if (need[t] < 0 || need[t] > cnt[t]) { ok = false; break; }
+            }
+            if (!ok) continue;
+            Tiles partial = buildTiles(need);
+            auto &mp = res[partial];
+            if (mp.find(w) == mp.end()) mp[w] = WaitEntry{w, 10000, "国士无双"};
+        }
+    }
+}
+
 inline void searchHands(const Tiles &superset, ResultMap &res) {
+    searchKokushi(superset, res);
     for (int tile = 0; tile < 34; ++tile) {
         searchSevenPairsForTile(superset, tile, res);
         searchStandardForTile(superset, tile, res);

@@ -5,10 +5,10 @@
 #include <string>
 
 int main(int argc, char *argv[]){
-    if (argc != 6)
+    if (argc != 6 && argc != 7)
     {
         std::cerr << "Usage: " << argv[0]
-                  << " <tile_collection> <dora_indicator> <akadora_indicators> <wind_indicator> <seat_wind_indicator>\n";
+                  << " <tile_collection> <dora_indicator> <akadora_indicators> <wind_indicator> <seat_wind_indicator> [limit]\n";
         return 1;
     }
 
@@ -17,6 +17,7 @@ int main(int argc, char *argv[]){
     Tiles akadoraIndicators;
     std::string windIndicator;
     std::string seatWindIndicator;
+    size_t limit = 0;
 
     try
     {
@@ -25,6 +26,9 @@ int main(int argc, char *argv[]){
         akadoraIndicators = Tiles(argv[3]);
         windIndicator = argv[4];
         seatWindIndicator = argv[5];
+        if (argc == 7) {
+            limit = std::stoul(argv[6]);
+        }
         initGameStatus(doraIndicator, akadoraIndicators, windIndicator, seatWindIndicator);
     }
     catch (std::exception const &e)
@@ -35,6 +39,6 @@ int main(int argc, char *argv[]){
 
     ResultMap results;
     searchHands(allHand, results);
-    printResults(results);
+    printResults(results, limit);
     return 0;
 }

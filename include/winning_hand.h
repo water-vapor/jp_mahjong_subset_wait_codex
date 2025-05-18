@@ -408,6 +408,9 @@ public:
 
     YakuResult sanankou() const {
         YakuResult res;
+        if (isChiitoitsu){
+            return res;
+        }
         int ankou_count = 0;
         for (int i = 0; i < 4; i++){
             if (groupTypes[i] == 0 && waitMeldIndex != i){
@@ -447,9 +450,14 @@ public:
         if (isChiitoitsu){
             return res;
         }
-        if (groupTypes[0] == 1 && groupTypes[1] == 1 && groupTypes[2] == 1 && groupTypes[3] == 1 && tileIds[0] == tileIds[1] && tileIds[2] == tileIds[3]){
-            res.han += 2;
-            res.yaku += "两杯口 ";
+        if (groupTypes[0] == 1 && groupTypes[1] == 1 && groupTypes[2] == 1 && groupTypes[3] == 1){
+            bool case1 = tileIds[0] == tileIds[1] && tileIds[2] == tileIds[3];
+            bool case2 = tileIds[0] == tileIds[2] && tileIds[1] == tileIds[3];
+            bool case3 = tileIds[0] == tileIds[3] && tileIds[1] == tileIds[2];
+            if (case1 || case2 || case3){
+                res.han += 2;
+                res.yaku += "两杯口 ";
+            }
         }
         return res;
     }
@@ -617,7 +625,7 @@ public:
         bool isChuuren = false;
         bool isChuuren9wait = false;
         int inferredSuit = Tiles::suitIndex[tileIds[0]];
-        std::array<int, 9> counts;
+        std::array<int, 9> counts{};
         for (auto tileId : fullTiles()){
             if (Tiles::suitIndex[tileId] != inferredSuit){
                 return res;
@@ -726,8 +734,8 @@ public:
     }
 
     bool _sanshouku_tsuukan_helper(int tileId1, int tileId2, int tileId3) const {
-        std::array<int, 3> numCounts;
-        std::array<int, 3> suitCounts;
+        std::array<int, 3> numCounts{};
+        std::array<int, 3> suitCounts{};
         numCounts[(tileId1 % 9)/3]++;
         numCounts[(tileId2 % 9)/3]++;
         numCounts[(tileId3 % 9)/3]++;

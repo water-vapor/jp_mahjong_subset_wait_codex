@@ -44,6 +44,17 @@ void test_pinfu_wait_shape(){
     assert(h.pinfu().han == 0);
 }
 
+void test_pinfu_two_sided_high(){
+    resetGame();
+    WinningHand h{};
+    h.tileIds = {m7,p2,p5,s2,0,0,0};
+    h.groupTypes = {1,1,1,1};
+    h.pairTileId = m3;
+    h.waitMeldIndex = 0;
+    h.waitTileId = m9;
+    assert(h.pinfu().han == 1);
+}
+
 void test_tanyao(){
     resetGame();
     WinningHand h{};
@@ -268,6 +279,16 @@ void test_winds(){
     assert(bad.winds().han == 0);
 }
 
+void test_winds_same(){
+    Tiles aka;
+    initGameStatus("1m", aka, "1z", "1z");
+    WinningHand h{};
+    h.tileIds = {m2,m3,m4,z1,0,0,0};
+    h.groupTypes = {0,0,0,0};
+    h.pairTileId = m5;
+    assert(h.winds().han == 2);
+}
+
 void test_dora(){
     resetGame();
     WinningHand h{};
@@ -297,7 +318,7 @@ void test_ryanpeikou(){
     h.tileIds = {m1,m1,m4,m4,0,0,0};
     h.groupTypes = {1,1,1,1};
     h.pairTileId = z1;
-    assert(h.ryanpeikou().han == 2);
+    assert(h.ryanpeikou().han == 3);
     WinningHand bad = h;
     bad.tileIds[2] = m5;
     assert(bad.ryanpeikou().han == 0);
@@ -539,6 +560,7 @@ int main(){
     test_pinfu();
     test_pinfu_value_pair();
     test_pinfu_wait_shape();
+    test_pinfu_two_sided_high();
     test_tanyao();
     test_chiitoitsu();
     test_chiitoitsu_triplet();
@@ -558,6 +580,7 @@ int main(){
     test_chinroutou();
     test_suuankou_tanki();
     test_winds();
+    test_winds_same();
     test_dora();
     test_iipeikou();
     test_ryanpeikou();

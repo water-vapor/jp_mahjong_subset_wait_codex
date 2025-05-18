@@ -241,8 +241,9 @@ inline void printResults(const ResultMap &res) {
         return a.entry.han>b.entry.han;
     });
     for(auto const &it:all) {
+        if (it.entry.han == 0) continue; // Skip zero-han results
         std::cout << it.hand.toString() << " waiting " << tileToString(it.entry.waitTile)
-                  << " han " << it.entry.han << " " << it.entry.yaku
+                  << ' ' << it.entry.han << "番 " << it.entry.yaku
                   << "\n";
     }
 }

@@ -376,6 +376,12 @@ void test_sanshoku_tsuukan(){
     WinningHand bad = h;
     bad.tileIds[2] = s4;
     assert(bad.sanshoku_tsuukan().han == 0);
+    // sequences that start at 3, 5, 7 should not count
+    WinningHand wrong{};
+    wrong.tileIds = {p3,m5,s7,m1,0,0,0};
+    wrong.groupTypes = {1,1,1,0};
+    wrong.pairTileId = z1;
+    assert(wrong.sanshoku_tsuukan().han == 0);
 }
 
 void test_sanrenkou(){

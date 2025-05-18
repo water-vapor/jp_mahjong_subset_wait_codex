@@ -125,26 +125,29 @@
         return res;
     }
 
-    YakuResult iipeikou() const {
+    YakuResult peikou() const {
         YakuResult res;
         if (isChiitoitsu){
             return res;
         }
-        bool isLipeikou = false;
         bool isRyanpeikou = (groupTypes[0] == 1 && groupTypes[1] == 1 && groupTypes[2] == 1 && groupTypes[3] == 1 &&
             tileIds[0] == tileIds[1] && tileIds[2] == tileIds[3]);
-        if (!isRyanpeikou){
-            if (groupTypes[0] == 1 && groupTypes[1] == 1 && tileIds[0] == tileIds[1]){
-                isLipeikou = true;
-            }
-            if (groupTypes[1] == 1 && groupTypes[2] == 1 && tileIds[1] == tileIds[2]){
-                isLipeikou = true;
-            }
-            if (groupTypes[2] == 1 && groupTypes[3] == 1 && tileIds[2] == tileIds[3]){
-                isLipeikou = true;
-            }
+        if (isRyanpeikou){
+            res.han += 3;
+            res.yaku += "两杯口 ";
+            return res;
         }
-        if (isLipeikou){
+        bool isIipeikou = false;
+        if (groupTypes[0] == 1 && groupTypes[1] == 1 && tileIds[0] == tileIds[1]){
+            isIipeikou = true;
+        }
+        if (groupTypes[1] == 1 && groupTypes[2] == 1 && tileIds[1] == tileIds[2]){
+            isIipeikou = true;
+        }
+        if (groupTypes[2] == 1 && groupTypes[3] == 1 && tileIds[2] == tileIds[3]){
+            isIipeikou = true;
+        }
+        if (isIipeikou){
             res.han += 1;
             res.yaku += "一杯口 ";
         }
@@ -333,18 +336,6 @@
         return res;
     }
 
-    YakuResult ryanpeikou() const {
-        YakuResult res;
-        if (isChiitoitsu){
-            return res;
-        }
-        if (groupTypes[0] == 1 && groupTypes[1] == 1 && groupTypes[2] == 1 && groupTypes[3] == 1 &&
-            tileIds[0] == tileIds[1] && tileIds[2] == tileIds[3]){
-            res.han += 3;
-            res.yaku += "两杯口 ";
-        }
-        return res;
-    }
 
     YakuResult hunroutou() const {
         YakuResult res;

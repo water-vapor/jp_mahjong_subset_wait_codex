@@ -8,9 +8,9 @@
 
 struct WaitEntry {
     int waitTile = -1;    // tile needed to win
-    int han = 0;          // total han (currently not calculated)
-    int fu = 0;           // fu value (placeholder)
-    std::string yaku;     // yaku description (placeholder)
+    int han = 0;          // total han
+    int fu = 0;           // fu value (unused currently)
+    std::string yaku;     // yaku description
 };
 
 using ResultMap = std::unordered_map<Tiles, std::vector<WaitEntry>, Tiles::Hash>;
@@ -64,13 +64,83 @@ inline bool isStandardHand(const Tiles &t) {
     return dfsMelds(cnt,false);
 }
 
+// Build WinningHand representation from tiles. Returns false if no hand found.
+inline bool buildStandardRec(std::array<int,34> &cnt, int depth, bool pairUsed,
+                             bool usedWin, int winTile, WinningHand &out) {
+    int first=-1;
+    for(int i=0;i<34;++i) if(cnt[i]>0){ first=i; break; }
+    if(first==-1)
+        return pairUsed && usedWin && depth==4;
+
+    if(!pairUsed && cnt[first]>=2) {
+        cnt[first]-=2;
+        int old=out.waitMeldIndex;
+        out.pairTileId=first;
+        bool use=false;
+        if(!usedWin && first==winTile){ use=true; out.waitMeldIndex=4; }
+        if(buildStandardRec(cnt, depth, true, usedWin||use, winTile, out)) return true;
+        cnt[first]+=2;
+        if(use) out.waitMeldIndex=old;
+    }
+
+    if(cnt[first]>=3) {
+        cnt[first]-=3;
+        out.tileIds[depth]=first;
+        out.groupTypes[depth]=0;
+        int old=out.waitMeldIndex;
+        bool use=false;
+        if(!usedWin && first==winTile){ use=true; out.waitMeldIndex=depth; }
+        if(buildStandardRec(cnt, depth+1, pairUsed, usedWin||use, winTile, out)) return true;
+        cnt[first]+=3;
+        if(use) out.waitMeldIndex=old;
+    }
+
+    if(Tiles::suitIndex[first]<3 && first%9<=6 && cnt[first+1]>0 && cnt[first+2]>0) {
+        cnt[first]--; cnt[first+1]--; cnt[first+2]--;
+        out.tileIds[depth]=first;
+        out.groupTypes[depth]=1;
+        int old=out.waitMeldIndex;
+        bool use=false;
+        if(!usedWin && (first==winTile || first+1==winTile || first+2==winTile))
+            { use=true; out.waitMeldIndex=depth; }
+        if(buildStandardRec(cnt, depth+1, pairUsed, usedWin||use, winTile, out)) return true;
+        cnt[first]++; cnt[first+1]++; cnt[first+2]++;
+        if(use) out.waitMeldIndex=old;
+    }
+    return false;
+}
+
+inline bool buildWinningHand(const Tiles &t, int winTile, WinningHand &out) {
+    if(isSevenPairs(t)) {
+        out = WinningHand{};
+        out.isChiitoitsu=true;
+        int idx=0;
+        for(int i=0;i<34;++i) if(t.getCount(i)==2) out.tileIds[idx++]=i;
+        out.waitTileId=winTile;
+        out.waitMeldIndex=-1;
+        return true;
+    }
+    if(isStandardHand(t)) {
+        out = WinningHand{};
+        out.isChiitoitsu=false;
+        std::array<int,34> cnt{};
+        for(int i=0;i<34;++i) cnt[i]=t.getCount(i);
+        out.waitTileId=winTile;
+        out.waitMeldIndex=-1;
+        if(buildStandardRec(cnt,0,false,false,winTile,out)) return true;
+    }
+    return false;
+}
+
 // Evaluate a 13-tile partial hand by checking each possible winning tile.
 inline void evaluateHand(const Tiles &hand, ResultMap &res) {
     for(int tile=0; tile<34; ++tile) {
         Tiles tmp = hand;
-        tmp.add(tile);
-        if (isSevenPairs(tmp) || isStandardHand(tmp)) {
-            WaitEntry we{tile,0,0,""};
+        if(!tmp.add(tile)) continue;
+        WinningHand wh;
+        if(buildWinningHand(tmp, tile, wh)) {
+            wh.calculateHan();
+            WaitEntry we{tile, wh.totalHan, 0, wh.yakuString};
             auto &vec = res[hand];
             bool exists=false;
             for(auto &v:vec) if(v.waitTile==tile){ exists=true; break; }

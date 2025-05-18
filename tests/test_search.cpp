@@ -11,17 +11,9 @@ int main(){
     auto it = res.find(target);
     assert(it != res.end());
     int wait = Tiles::tileIndex("1s");
-    bool found = false;
-    int foundHan = 0;
-    for(const auto &we : it->second){
-        if(we.waitTile == wait){
-            found = true;
-            foundHan = we.han;
-            break;
-        }
-    }
-    assert(found);
-    assert(foundHan > 0);
+    auto wit = it->second.find(wait);
+    assert(wit != it->second.end());
+    assert(wit->second.han > 0);
     std::cout << "Search tests passed\n";
     return 0;
 }

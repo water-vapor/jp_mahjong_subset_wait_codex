@@ -8,16 +8,20 @@ all: main
 main: $(SRC)
 	$(CXX) $(CXXFLAGS) $(SRC) -o main
 
-TESTS=tests/test_tiles tests/test_yaku
+TESTS=tests/test_tiles tests/test_yaku tests/test_compound
 
 test: $(TESTS)
 	./tests/test_tiles
 	./tests/test_yaku
+	./tests/test_compound
 
 tests/test_tiles: tests/test_tiles.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 tests/test_yaku: tests/test_yaku.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@
+
+tests/test_compound: tests/test_compound.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
 
 clean:

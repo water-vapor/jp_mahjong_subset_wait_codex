@@ -92,9 +92,22 @@
             }
         }
         if (isPinfu){
-            bool leftWait = waitTileId == tileIds[waitMeldIndex] && (tileIds[waitMeldIndex] % 9 != 0);
-            bool rightWait = waitTileId == tileIds[waitMeldIndex] + 2 && ((tileIds[waitMeldIndex] + 2) % 9 != 8);
-            if (!leftWait && !rightWait){
+            bool twoSided = false;
+            if (waitMeldIndex >= 0 && waitMeldIndex < 4 && groupTypes[waitMeldIndex]){
+                int base = tileIds[waitMeldIndex];
+                int t1 = -1, t2 = -1;
+                if (waitTileId == base){
+                    t1 = base + 1; t2 = base + 2;
+                } else if (waitTileId == base + 1){
+                    t1 = base; t2 = base + 2;
+                } else if (waitTileId == base + 2){
+                    t1 = base; t2 = base + 1;
+                }
+                if (t1 != -1 && t2 - t1 == 1 && t1 % 9 != 0 && t2 % 9 != 8){
+                    twoSided = true;
+                }
+            }
+            if (!twoSided){
                 isPinfu = false;
             }
             if (pairTileId == z5 || pairTileId == z6 || pairTileId == z7 ||

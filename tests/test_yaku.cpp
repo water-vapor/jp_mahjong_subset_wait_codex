@@ -33,6 +33,17 @@ void test_pinfu_value_pair(){
     assert(h.pinfu().han == 0);
 }
 
+void test_pinfu_wait_shape(){
+    resetGame();
+    WinningHand h{};
+    h.tileIds = {m1,p1,p7,s1,0,0,0};
+    h.groupTypes = {1,1,1,1};
+    h.pairTileId = s1;
+    h.waitMeldIndex = 0;
+    h.waitTileId = m3;
+    assert(h.pinfu().han == 0);
+}
+
 void test_tanyao(){
     resetGame();
     WinningHand h{};
@@ -512,6 +523,7 @@ void test_daichisei(){
 int main(){
     test_pinfu();
     test_pinfu_value_pair();
+    test_pinfu_wait_shape();
     test_tanyao();
     test_chiitoitsu();
     test_chiitoitsu_triplet();

@@ -26,7 +26,6 @@
 
 # Contributor Guide
 1. The project is now split across headers and sources. When adding new files, match the existing naming style and keep code well commented.
-2. Unit tests already cover tiles, yaku and compound scenarios. Extend the test suite whenever new logic is introduced.
-3. Yaku methods already return a `YakuResult`. Ensure new yaku related code follows this pattern instead of mutating members directly.
-4. You should check for duplicated or inelegant code. If there are better and cleaner ways to write it, you can change it.
-5. A `.gitignore` file already excludes build artifacts (`main` and test binaries`). Keep it up to date when adding new tools.
+2. Unit tests should cover tiles, yaku and compound scenarios. Extend the test suite whenever new logic is introduced.
+3. You should check for duplicated or inelegant code. If there are better and cleaner ways to write it, you can change it.
+4. A `.gitignore` file already excludes build artifacts (`main` and test binaries`). Keep it up to date when adding new tools.

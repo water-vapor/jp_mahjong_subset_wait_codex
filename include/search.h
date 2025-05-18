@@ -269,6 +269,7 @@ inline void printResults(const ResultMap &res, size_t limit = 0) {
             tiles.push_back(kv.first);
             if (!best || kv.second.han > best->han) best = &kv.second;
         }
+        if (!best || best->han == 0) continue; // skip configurations with zero-han waits only
         std::sort(tiles.begin(), tiles.end());
         std::cout << c.hand.toString() << ' ';
         for (size_t i = 0; i < tiles.size(); ++i) {
@@ -276,10 +277,8 @@ inline void printResults(const ResultMap &res, size_t limit = 0) {
             std::cout << tileToString(tiles[i]);
         }
         std::cout << ' ' << c.count << "面待ち";
-        if (best) {
-            std::cout << ' ' << tileToString(best->waitTile) << ' '
-                      << best->han << "番 " << best->yaku;
-        }
+        std::cout << ' ' << tileToString(best->waitTile) << ' '
+                  << best->han << "番 " << best->yaku;
         std::cout << "\n";
         if (limit && ++printed >= limit) break;
     }

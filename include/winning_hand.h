@@ -3,6 +3,7 @@
 #include <array>
 #include <string>
 #include <iostream>
+#include <cassert>
 
 struct YakuResult {
     int han{};
@@ -21,6 +22,21 @@ public:
     std::string yakuString = "";
 
     WinningHand() = default;
+
+    bool isOrdered() const {
+        for (size_t i = 1; i < tileIds.size(); ++i) {
+            if (tileIds[i] < tileIds[i-1]) return false;
+        }
+        return true;
+    }
+
+    bool validChiitoi() const {
+        if (!isChiitoitsu) return false;
+        for (size_t i = 1; i < tileIds.size(); ++i) {
+            if (tileIds[i] <= tileIds[i-1]) return false;
+        }
+        return true;
+    }
 
     void addResult(const YakuResult& res) {
         if (res.han > 0) {
@@ -84,6 +100,8 @@ public:
             std::cerr << "totalHan is already calculated" << std::endl;
             return;
         }
+        assert(isOrdered());
+        if (isChiitoitsu) assert(validChiitoi());
         calculateYakuman();
         if (totalHan == 0)
             calculateYaku();
@@ -233,6 +251,10 @@ public:
             if (!leftWait && !rightWait){
                 isPinfu = false;
             }
+            if (pairTileId == z5 || pairTileId == z6 || pairTileId == z7 ||
+                pairTileId == gameInfo.prevailingWind || pairTileId == gameInfo.seatWind){
+                isPinfu = false;
+            }
         }
         if (isPinfu){
             res.han += 1;
@@ -265,7 +287,7 @@ public:
 
     YakuResult chitoitsu() const {
         YakuResult res;
-        if (isChiitoitsu){
+        if (isChiitoitsu && validChiitoi()){
             res.han += 2;
             res.yaku += "七对子 ";
         }

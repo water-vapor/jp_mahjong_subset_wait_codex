@@ -172,22 +172,22 @@
         }
         bool isSanshoku = false;
         int sameGroupType = -1;
-        if (groupTypes[0] == groupTypes[1] && groupTypes[1] == groupTypes[2] && tileIds[0] % 9 == tileIds[1] % 9 && tileIds[1] % 9 == tileIds[2] % 9){
-            sameGroupType = groupTypes[0];
-            isSanshoku = true;
-        }
-        if (groupTypes[1] == groupTypes[2] && groupTypes[2] == groupTypes[3] && tileIds[1] % 9 == tileIds[2] % 9 && tileIds[2] % 9 == tileIds[3] % 9){
-            sameGroupType = groupTypes[1];
-            isSanshoku = true;
-        }
-        if (groupTypes[0] == groupTypes[1] && groupTypes[1] == groupTypes[3] && tileIds[0] % 9 == tileIds[1] % 9 && tileIds[1] % 9 == tileIds[3] % 9){
-            sameGroupType = groupTypes[0];
-            isSanshoku = true;
-        }
-        if (groupTypes[0] == groupTypes[2] && groupTypes[2] == groupTypes[3] && tileIds[0] % 9 == tileIds[2] % 9 && tileIds[2] % 9 == tileIds[3] % 9){
-            sameGroupType = groupTypes[0];
-            isSanshoku = true;
-        }
+        auto check_combo = [&](int a, int b, int c){
+            if (groupTypes[a] == groupTypes[b] && groupTypes[b] == groupTypes[c] &&
+                tileIds[a] % 9 == tileIds[b] % 9 && tileIds[b] % 9 == tileIds[c] % 9){
+                int s1 = Tiles::suitIndex[tileIds[a]];
+                int s2 = Tiles::suitIndex[tileIds[b]];
+                int s3 = Tiles::suitIndex[tileIds[c]];
+                if (s1 < 3 && s2 < 3 && s3 < 3 && s1 != s2 && s1 != s3 && s2 != s3){
+                    sameGroupType = groupTypes[a];
+                    isSanshoku = true;
+                }
+            }
+        };
+        check_combo(0,1,2);
+        check_combo(1,2,3);
+        check_combo(0,1,3);
+        check_combo(0,2,3);
         if (isSanshoku){
             res.han += 2;
             if (sameGroupType == 0){

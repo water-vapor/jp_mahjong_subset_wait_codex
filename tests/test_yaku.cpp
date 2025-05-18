@@ -114,6 +114,15 @@ void test_sanshoku(){
     assert(triplet.sanshoku().han == 2);
 }
 
+void test_sanshoku_same_suit(){
+    resetGame();
+    WinningHand h{};
+    h.tileIds = {m7,s1,s7,s7,0,0,0};
+    h.groupTypes = {1,1,1,1};
+    h.pairTileId = z1;
+    assert(h.sanshoku().han == 0);
+}
+
 void test_ittsuu(){
     resetGame();
     WinningHand h{};
@@ -536,6 +545,7 @@ int main(){
     test_tile_order();
     test_toitoi();
     test_sanshoku();
+    test_sanshoku_same_suit();
     test_ittsuu();
     test_hon_chinitsu();
     test_sanankou();

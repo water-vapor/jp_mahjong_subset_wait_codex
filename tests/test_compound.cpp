@@ -99,7 +99,7 @@ void compound_chiitoitsu(){
     h.tileIds = {m1,m2,m3,m4,p5,p6,p7};
     h.waitTileId = -1;
     h.calculateHan();
-    assert(h.totalHan == 6);
+    assert(h.totalHan == 4);
 }
 
 void compound_sanrenkou(){

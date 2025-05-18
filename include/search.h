@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <unordered_set>
 
 struct WaitEntry {
     int waitTile = -1;    // tile needed to win
@@ -233,21 +234,53 @@ inline void searchHands(const Tiles &superset, ResultMap &res) {
 // Print results sorted by han descending. If limit > 0, only the first
 // `limit` results in each section are printed.
 inline void printResults(const ResultMap &res, size_t limit = 0) {
-    struct Item { Tiles hand; WaitEntry entry; };
-    std::vector<Item> all;
+    struct HandInfo {
+        Tiles hand;
+        std::vector<WaitEntry> waits;  // sorted by han desc
+        std::vector<int> tiles;        // sorted ascending
+    };
+    std::vector<HandInfo> infos;
     for (auto const &p : res) {
-        for (auto const &kv : p.second) all.push_back({p.first, kv.second});
+        HandInfo hi;
+        hi.hand = p.first;
+        for (auto const &kv : p.second) {
+            if (kv.second.han == 0) continue; // ignore zero-han waits entirely
+            hi.waits.push_back(kv.second);
+            hi.tiles.push_back(kv.first);
+        }
+        if (hi.waits.empty()) continue;
+        std::sort(hi.waits.begin(), hi.waits.end(), [](const WaitEntry &a, const WaitEntry &b){
+            return a.han > b.han;
+        });
+        std::sort(hi.tiles.begin(), hi.tiles.end());
+        infos.push_back(std::move(hi));
     }
-    std::sort(all.begin(), all.end(), [](const Item &a, const Item &b) {
-        return a.entry.han > b.entry.han;
+    std::sort(infos.begin(), infos.end(), [](const HandInfo &a, const HandInfo &b){
+        return a.waits[0].han > b.waits[0].han;
     });
+
     size_t printed = 0;
-    for (auto const &it : all) {
-        if (it.entry.han == 0) continue; // Skip zero-han results
-        std::cout << it.hand.toString() << " waiting "
-                  << tileToString(it.entry.waitTile) << ' ' << it.entry.han
-                  << "番 " << it.entry.yaku << "\n";
-        if (limit && ++printed >= limit) break;
+    std::unordered_set<Tiles, Tiles::Hash> printedHands;
+    for (auto const &hi : infos) {
+        if (limit && printed >= limit) break;
+        std::string handStr = hi.hand.toString();
+        std::cout << handStr << ' ';
+        for (size_t i = 0; i < hi.tiles.size(); ++i) {
+            if (i) std::cout << ' ';
+            std::cout << tileToString(hi.tiles[i]);
+        }
+        std::cout << ' ' << hi.tiles.size() << "面待ち ";
+        const WaitEntry &best = hi.waits[0];
+        std::cout << tileToString(best.waitTile) << ' ' << best.han
+                  << "番 " << best.yaku << "\n";
+        ++printed;
+        printedHands.insert(hi.hand);
+        std::string indent(handStr.size() + 1, ' ');
+        for (size_t i = 1; i < hi.waits.size(); ++i) {
+            const WaitEntry &we = hi.waits[i];
+            std::cout << indent << tileToString(we.waitTile) << ' '
+                      << we.han << "番 " << we.yaku << "\n";
+        }
     }
 
     std::cout << "-----\n"; // separator between sorting outputs
@@ -255,6 +288,7 @@ inline void printResults(const ResultMap &res, size_t limit = 0) {
     struct CountItem { Tiles hand; const WaitMap *waits; size_t count; };
     std::vector<CountItem> counts;
     for (auto const &p : res) {
+        if (printedHands.count(p.first)) continue;
         counts.push_back({p.first, &p.second, p.second.size()});
     }
     std::sort(counts.begin(), counts.end(), [](const CountItem &a, const CountItem &b) {

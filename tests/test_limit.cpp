@@ -35,8 +35,8 @@ int main(){
         ++countWait;
         ++pos;
     }
-    assert(countHan == 4); // han appears in both sections
-    assert(countWait == 2);
+    assert(countHan == 3); // one hand moves to the second section
+    assert(countWait == 3); // "面待ち" appears in both sections
     std::cout << "Limit tests passed\n";
     return 0;
 }

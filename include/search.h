@@ -304,7 +304,10 @@ inline void printResults(const ResultMap &res, size_t limit = 0) {
                   << "番 " << best.yaku << "\n";
         ++printed;
         printedHands.insert(hi.hand);
-        std::string indent(handWidth + 1 + waitWidth + 1 + countWidth + 4, ' ');
+        // "\xE9\x9D\xA2\xE5\xBE\x85\xE3\x81\xA1 " is three full-width characters
+        // ("面待ち") plus a space. These CJK characters typically occupy two
+        // columns each when printed, so adjust the indent accordingly.
+        std::string indent(handWidth + 1 + waitWidth + 1 + countWidth + 7, ' ');
         for (size_t i = 1; i < hi.waits.size(); ++i) {
             const WaitEntry &we = hi.waits[i];
             std::cout << indent << std::left << std::setw(2)

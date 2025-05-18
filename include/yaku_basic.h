@@ -276,6 +276,9 @@
 
     YakuResult sanankou() const {
         YakuResult res;
+        if (isChiitoitsu){
+            return res;
+        }
         int ankou_count = 0;
         for (int i = 0; i < 4; i++){
             if (groupTypes[i] == 0 && waitMeldIndex != i){

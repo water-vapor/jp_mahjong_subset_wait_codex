@@ -141,6 +141,14 @@ void test_sanankou(){
     assert(bad.sanankou().han == 0);
 }
 
+void test_sanankou_chiitoitsu(){
+    resetGame();
+    WinningHand h{};
+    h.isChiitoitsu = true;
+    h.tileIds = {m1,m2,m3,m4,m5,m6,m7};
+    assert(h.sanankou().han == 0);
+}
+
 void test_shousangen(){
     resetGame();
     WinningHand h{};
@@ -513,6 +521,7 @@ int main(){
     test_ittsuu();
     test_hon_chinitsu();
     test_sanankou();
+    test_sanankou_chiitoitsu();
     test_shousangen();
     test_daisangen();
     test_suushi();

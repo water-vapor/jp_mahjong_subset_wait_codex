@@ -617,7 +617,7 @@ public:
         bool isChuuren = false;
         bool isChuuren9wait = false;
         int inferredSuit = Tiles::suitIndex[tileIds[0]];
-        std::array<int, 9> counts;
+        std::array<int, 9> counts{};
         for (auto tileId : fullTiles()){
             if (Tiles::suitIndex[tileId] != inferredSuit){
                 return res;
@@ -726,8 +726,8 @@ public:
     }
 
     bool _sanshouku_tsuukan_helper(int tileId1, int tileId2, int tileId3) const {
-        std::array<int, 3> numCounts;
-        std::array<int, 3> suitCounts;
+        std::array<int, 3> numCounts{};
+        std::array<int, 3> suitCounts{};
         numCounts[(tileId1 % 9)/3]++;
         numCounts[(tileId2 % 9)/3]++;
         numCounts[(tileId3 % 9)/3]++;

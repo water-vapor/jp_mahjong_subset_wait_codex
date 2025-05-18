@@ -4,12 +4,13 @@
             return res;
         }
         for (int i = 0; i < 4; i++){
-            if (groupTypes[i] == 0 && (tileIds[i] == gameInfo.prevailingWind || tileIds[i] == gameInfo.seatWind)){
-                res.han += 1;
+            if (groupTypes[i] == 0){
                 if (tileIds[i] == gameInfo.prevailingWind){
+                    res.han += 1;
                     res.yaku += "场风 ";
                 }
-                else if (tileIds[i] == gameInfo.seatWind){
+                if (tileIds[i] == gameInfo.seatWind){
+                    res.han += 1;
                     res.yaku += "自风 ";
                 }
             }
@@ -95,16 +96,18 @@
             bool twoSided = false;
             if (waitMeldIndex >= 0 && waitMeldIndex < 4 && groupTypes[waitMeldIndex]){
                 int base = tileIds[waitMeldIndex];
-                int t1 = -1, t2 = -1;
-                if (waitTileId == base){
-                    t1 = base + 1; t2 = base + 2;
-                } else if (waitTileId == base + 1){
-                    t1 = base; t2 = base + 2;
-                } else if (waitTileId == base + 2){
-                    t1 = base; t2 = base + 1;
-                }
-                if (t1 != -1 && t2 - t1 == 1 && t1 % 9 != 0 && t2 % 9 != 8){
-                    twoSided = true;
+                if (waitTileId == base || waitTileId == base + 2){
+                    int r1, r2;
+                    if (waitTileId == base){
+                        r1 = (base + 1) % 9 + 1;
+                        r2 = (base + 2) % 9 + 1;
+                    } else {
+                        r1 = base % 9 + 1;
+                        r2 = (base + 1) % 9 + 1;
+                    }
+                    if (r1 > 1 && r2 < 9){
+                        twoSided = true;
+                    }
                 }
             }
             if (!twoSided){
@@ -128,14 +131,18 @@
             return res;
         }
         bool isLipeikou = false;
-        if (groupTypes[0] == 1 && groupTypes[1] == 1 && tileIds[0] == tileIds[1]){
-            isLipeikou = true;
-        }
-        if (groupTypes[1] == 1 && groupTypes[2] == 1 && tileIds[1] == tileIds[2]){
-            isLipeikou = true;
-        }
-        if (groupTypes[2] == 1 && groupTypes[3] == 1 && tileIds[2] == tileIds[3]){
-            isLipeikou = true;
+        bool isRyanpeikou = (groupTypes[0] == 1 && groupTypes[1] == 1 && groupTypes[2] == 1 && groupTypes[3] == 1 &&
+            tileIds[0] == tileIds[1] && tileIds[2] == tileIds[3]);
+        if (!isRyanpeikou){
+            if (groupTypes[0] == 1 && groupTypes[1] == 1 && tileIds[0] == tileIds[1]){
+                isLipeikou = true;
+            }
+            if (groupTypes[1] == 1 && groupTypes[2] == 1 && tileIds[1] == tileIds[2]){
+                isLipeikou = true;
+            }
+            if (groupTypes[2] == 1 && groupTypes[3] == 1 && tileIds[2] == tileIds[3]){
+                isLipeikou = true;
+            }
         }
         if (isLipeikou){
             res.han += 1;
@@ -331,8 +338,9 @@
         if (isChiitoitsu){
             return res;
         }
-        if (groupTypes[0] == 1 && groupTypes[1] == 1 && groupTypes[2] == 1 && groupTypes[3] == 1 && tileIds[0] == tileIds[1] && tileIds[2] == tileIds[3]){
-            res.han += 2;
+        if (groupTypes[0] == 1 && groupTypes[1] == 1 && groupTypes[2] == 1 && groupTypes[3] == 1 &&
+            tileIds[0] == tileIds[1] && tileIds[2] == tileIds[3]){
+            res.han += 3;
             res.yaku += "两杯口 ";
         }
         return res;

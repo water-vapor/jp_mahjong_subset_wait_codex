@@ -230,8 +230,9 @@ inline void searchHands(const Tiles &superset, ResultMap &res) {
     }
 }
 
-// Print results sorted by han descending.
-inline void printResults(const ResultMap &res) {
+// Print results sorted by han descending. If limit > 0, only the first
+// `limit` results in each section are printed.
+inline void printResults(const ResultMap &res, size_t limit = 0) {
     struct Item { Tiles hand; WaitEntry entry; };
     std::vector<Item> all;
     for (auto const &p : res) {
@@ -240,11 +241,13 @@ inline void printResults(const ResultMap &res) {
     std::sort(all.begin(), all.end(), [](const Item &a, const Item &b) {
         return a.entry.han > b.entry.han;
     });
+    size_t printed = 0;
     for (auto const &it : all) {
         if (it.entry.han == 0) continue; // Skip zero-han results
         std::cout << it.hand.toString() << " waiting "
                   << tileToString(it.entry.waitTile) << ' ' << it.entry.han
                   << "番 " << it.entry.yaku << "\n";
+        if (limit && ++printed >= limit) break;
     }
 
     std::cout << "-----\n"; // separator between sorting outputs
@@ -257,8 +260,10 @@ inline void printResults(const ResultMap &res) {
     std::sort(counts.begin(), counts.end(), [](const CountItem &a, const CountItem &b) {
         return a.count > b.count;
     });
+    printed = 0;
     for (auto const &c : counts) {
         std::cout << c.hand.toString() << ' ' << c.count << "面待ち\n";
+        if (limit && ++printed >= limit) break;
     }
 }
 

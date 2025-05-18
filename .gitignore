@@ -5,3 +5,4 @@ tests/test_yaku
 tests/test_compound
 tests/test_search
 tests/test_print
+tests/test_limit

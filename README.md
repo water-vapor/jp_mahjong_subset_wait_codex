@@ -1,0 +1,29 @@
+# Mahjong Subset Wait Search
+
+This project enumerates all 13-tile subsets from a provided superset and checks whether adding any single tile forms a winning hand. Results are sorted by Han and Fu.
+
+## Build
+
+```bash
+make
+```
+
+## Run Tests
+
+```bash
+make test
+```
+
+## Usage
+
+```
+./main <tile_collection> <dora_indicator> <akadora_indicators> <wind_indicator> <seat_wind_indicator>
+```
+
+Example:
+
+```bash
+./main 112233m112233p11s 4z 5m5p 1z 2z
+```
+
+This example searches all 13-tile subsets from `112233m112233p11s` using `4z` as the dora indicator, red fives in man and pin suits, prevailing wind `1z` and seat wind `2z`.

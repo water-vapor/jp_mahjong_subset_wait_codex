@@ -252,17 +252,35 @@ inline void printResults(const ResultMap &res, size_t limit = 0) {
 
     std::cout << "-----\n"; // separator between sorting outputs
 
-    struct CountItem { Tiles hand; size_t count; };
+    struct CountItem { Tiles hand; const WaitMap *waits; size_t count; };
     std::vector<CountItem> counts;
     for (auto const &p : res) {
-        counts.push_back({p.first, p.second.size()});
+        counts.push_back({p.first, &p.second, p.second.size()});
     }
     std::sort(counts.begin(), counts.end(), [](const CountItem &a, const CountItem &b) {
         return a.count > b.count;
     });
     printed = 0;
     for (auto const &c : counts) {
-        std::cout << c.hand.toString() << ' ' << c.count << "面待ち\n";
+        std::vector<int> tiles;
+        tiles.reserve(c.waits->size());
+        const WaitEntry *best = nullptr;
+        for (auto const &kv : *c.waits) {
+            tiles.push_back(kv.first);
+            if (!best || kv.second.han > best->han) best = &kv.second;
+        }
+        std::sort(tiles.begin(), tiles.end());
+        std::cout << c.hand.toString() << ' ';
+        for (size_t i = 0; i < tiles.size(); ++i) {
+            if (i) std::cout << ' ';
+            std::cout << tileToString(tiles[i]);
+        }
+        std::cout << ' ' << c.count << "面待ち";
+        if (best) {
+            std::cout << ' ' << tileToString(best->waitTile) << ' '
+                      << best->han << "番 " << best->yaku;
+        }
+        std::cout << "\n";
         if (limit && ++printed >= limit) break;
     }
 }

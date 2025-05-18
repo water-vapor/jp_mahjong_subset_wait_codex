@@ -23,188 +23,167 @@ inline std::string tileToString(int tileId) {
     return std::to_string(rank) + suits[suit];
 }
 
-// Check if tiles form seven pairs hand.
-inline bool isSevenPairs(const Tiles &t) {
-    for (int i=0;i<34;++i) {
-        int c = t.getCount(i);
-        if (c==0) continue;
-        if (c!=2) return false;
-    }
-    return t.totalTiles()==14;
-}
+// ----- Targeted generation based searching -----
 
-// Helper to check if remaining tiles can be formed into melds.
-inline bool dfsMelds(std::array<int,34> &cnt, bool pairUsed) {
-    int first = -1;
-    for (int i=0;i<34;++i) if (cnt[i]>0) { first=i; break; }
-    if (first==-1) return pairUsed; // all tiles used
-    if (!pairUsed && cnt[first]>=2) {
-        cnt[first]-=2;
-        if (dfsMelds(cnt,true)) { cnt[first]+=2; return true; }
-        cnt[first]+=2;
-    }
-    if (cnt[first]>=3) {
-        cnt[first]-=3;
-        if (dfsMelds(cnt,pairUsed)) { cnt[first]+=3; return true; }
-        cnt[first]+=3;
-    }
-    if (Tiles::suitIndex[first]<3 && first%9<=6 && cnt[first+1]>0 && cnt[first+2]>0) {
-        cnt[first]--; cnt[first+1]--; cnt[first+2]--;
-        if (dfsMelds(cnt,pairUsed)) { cnt[first]++; cnt[first+1]++; cnt[first+2]++; return true; }
-        cnt[first]++; cnt[first+1]++; cnt[first+2]++;
-    }
-    return false;
-}
+struct GroupSpec {
+    int tile;
+    bool sequence; // true if sequence starting at tile, false if triplet of tile
+};
 
-// Check if tiles form standard hand (4 melds + pair)
-inline bool isStandardHand(const Tiles &t) {
-    if (t.totalTiles()!=14) return false;
-    std::array<int,34> cnt{};
-    for(int i=0;i<34;++i) cnt[i]=t.getCount(i);
-    return dfsMelds(cnt,false);
-}
-
-// Build WinningHand representation from tiles. Returns false if no hand found.
-inline bool buildStandardRec(std::array<int,34> &cnt, int depth, bool pairUsed,
-                             bool usedWin, int winTile, WinningHand &out) {
-    int first=-1;
-    for(int i=0;i<34;++i) if(cnt[i]>0){ first=i; break; }
-    if(first==-1)
-        return pairUsed && usedWin && depth==4;
-
-    if(!pairUsed && cnt[first]>=2) {
-        cnt[first]-=2;
-        int old=out.waitMeldIndex;
-        out.pairTileId=first;
-        bool use=false;
-        if(!usedWin && first==winTile){ use=true; out.waitMeldIndex=4; }
-        if(buildStandardRec(cnt, depth, true, usedWin||use, winTile, out)) return true;
-        cnt[first]+=2;
-        if(use) out.waitMeldIndex=old;
-    }
-
-    if(cnt[first]>=3) {
-        cnt[first]-=3;
-        out.tileIds[depth]=first;
-        out.groupTypes[depth]=0;
-        int old=out.waitMeldIndex;
-        bool use=false;
-        if(!usedWin && first==winTile){ use=true; out.waitMeldIndex=depth; }
-        if(buildStandardRec(cnt, depth+1, pairUsed, usedWin||use, winTile, out)) return true;
-        cnt[first]+=3;
-        if(use) out.waitMeldIndex=old;
-    }
-
-    if(Tiles::suitIndex[first]<3 && first%9<=6 && cnt[first+1]>0 && cnt[first+2]>0) {
-        cnt[first]--; cnt[first+1]--; cnt[first+2]--;
-        out.tileIds[depth]=first;
-        out.groupTypes[depth]=1;
-        int old=out.waitMeldIndex;
-        bool use=false;
-        if(!usedWin && (first==winTile || first+1==winTile || first+2==winTile))
-            { use=true; out.waitMeldIndex=depth; }
-        if(buildStandardRec(cnt, depth+1, pairUsed, usedWin||use, winTile, out)) return true;
-        cnt[first]++; cnt[first+1]++; cnt[first+2]++;
-        if(use) out.waitMeldIndex=old;
-    }
-    return false;
-}
-
-inline bool buildWinningHand(const Tiles &t, int winTile, WinningHand &out) {
-    if(isSevenPairs(t)) {
-        out = WinningHand{};
-        out.isChiitoitsu=true;
-        int idx=0;
-        for(int i=0;i<34;++i) if(t.getCount(i)==2) out.tileIds[idx++]=i;
-        out.waitTileId=winTile;
-        out.waitMeldIndex=-1;
-        return true;
-    }
-    if(isStandardHand(t)) {
-        out = WinningHand{};
-        out.isChiitoitsu=false;
-        std::array<int,34> cnt{};
-        for(int i=0;i<34;++i) cnt[i]=t.getCount(i);
-        out.waitTileId=winTile;
-        out.waitMeldIndex=-1;
-        if(buildStandardRec(cnt,0,false,false,winTile,out)) return true;
-    }
-    return false;
-}
-
-// Check Kokushi and Kokushi Jusanmen. Returns true if hand+winTile forms
-// Kokushi; fills WaitEntry accordingly.
-inline bool checkKokushi(const Tiles &hand, int winTile, WaitEntry &out) {
-    static const int yaochu[13] = {m1,m9,p1,p9,s1,s9,z1,z2,z3,z4,z5,z6,z7};
-    Tiles tmp = hand;
-    if(!tmp.add(winTile)) return false;
-    if(tmp.totalTiles()!=14) return false;
-    int pairCount = 0;
-    for(int i=0;i<34;++i) {
-        int c = tmp.getCount(i);
-        if(c==0) continue;
-        if(!Tiles::isYaochu(i)) return false;
-        if(c>2) return false;
-        if(c==2) pairCount++;
-    }
-    if(pairCount!=1) return false;
-
-    bool thirteenUnique=true;
-    for(int id:yaochu){
-        int c = hand.getCount(id);
-        if(c!=1) { thirteenUnique=false; break; }
-    }
-
-    out.waitTile = winTile;
-    if(thirteenUnique){
-        out.han = 20000;
-        out.yaku = "国士無双十三面待ち";
-    } else {
-        out.han = 10000;
-        out.yaku = "国士無双";
-    }
-    return true;
-}
-
-// Evaluate a 13-tile partial hand by checking each possible winning tile.
-inline void evaluateHand(const Tiles &hand, ResultMap &res) {
-    for(int tile=0; tile<34; ++tile) {
-        WaitEntry we{};
-        bool kokushi = checkKokushi(hand, tile, we);
-        Tiles tmp = hand;
-        if(!tmp.add(tile)) continue;
-        if(!kokushi) {
-            WinningHand wh;
-            if(!buildWinningHand(tmp, tile, wh)) continue;
-            wh.calculateHan();
-            we.waitTile = tile;
-            we.han = wh.totalHan;
-            we.yaku = wh.yakuString;
+inline const std::vector<GroupSpec> &orderedGroups() {
+    static std::vector<GroupSpec> groups;
+    if (!groups.empty()) return groups;
+    for (int suit = 0; suit < 3; ++suit) {
+        for (int r = 0; r < 9; ++r) {
+            int base = suit * 9 + r;
+            groups.push_back({base, false});
+            if (r <= 6) groups.push_back({base, true});
         }
-        auto &mp = res[hand];
-        if(mp.find(tile)==mp.end()) mp[tile]=we;
+    }
+    for (int id = 27; id < 34; ++id) groups.push_back({id, false});
+    return groups;
+}
+
+inline bool canUse(const std::array<int,34> &cnt, const GroupSpec &g) {
+    if (g.sequence) {
+        if (Tiles::suitIndex[g.tile] >= 3 || g.tile % 9 > 6) return false;
+        return cnt[g.tile] > 0 && cnt[g.tile+1] > 0 && cnt[g.tile+2] > 0;
+    } else {
+        return cnt[g.tile] >= 3;
     }
 }
 
-// Recursively enumerate all 13-tile combinations from superset.
-inline void searchRec(int tileId, int remaining, Tiles &cur, const Tiles &superset, ResultMap &res) {
-    if (remaining==0) {
-        evaluateHand(cur,res);
+inline void applyGroup(std::array<int,34> &cnt, const GroupSpec &g, int delta) {
+    if (g.sequence) {
+        cnt[g.tile] += delta;
+        cnt[g.tile+1] += delta;
+        cnt[g.tile+2] += delta;
+    } else {
+        cnt[g.tile] += 3 * delta;
+    }
+}
+
+inline Tiles buildTiles(const std::array<int,34> &cnt) {
+    Tiles t;
+    for (int i = 0; i < 34; ++i) if (cnt[i]) t.add(i, cnt[i]);
+    return t;
+}
+
+inline void dfsGroups(int start, int depth, std::array<int,34> &cnt,
+                      std::array<int,34> &used, WinningHand &cur,
+                      int winTile, bool usedWin, ResultMap &res) {
+    if (depth == 4) {
+        if (!usedWin) return;
+        Tiles full = buildTiles(used);
+        WinningHand out = cur;
+        out.waitTileId = winTile;
+        out.calculateHan();
+        WaitEntry we{winTile, out.totalHan, out.yakuString};
+        Tiles partial = full;
+        partial.remove(winTile);
+        auto &mp = res[partial];
+        if (mp.find(winTile) == mp.end()) mp[winTile] = we;
         return;
     }
-    if (tileId>=34) return;
-    int maxCnt = std::min(superset.getCount(tileId), remaining);
-    for(int k=0;k<=maxCnt;++k) {
-        if(k>0) cur.add(tileId,k);
-        searchRec(tileId+1, remaining-k, cur, superset, res);
-        if(k>0) cur.remove(tileId,k);
+    const auto &groups = orderedGroups();
+    for (size_t i = start; i < groups.size(); ++i) {
+        const auto &g = groups[i];
+        if (!canUse(cnt, g)) continue;
+        applyGroup(cnt, g, -1);
+        if (g.sequence) {
+            used[g.tile]++;
+            used[g.tile+1]++;
+            used[g.tile+2]++;
+        } else {
+            used[g.tile] += 3;
+        }
+        int old = cur.waitMeldIndex;
+        bool use = usedWin;
+        if (!usedWin) {
+            if (!g.sequence && g.tile == winTile) { use = true; cur.waitMeldIndex = depth; }
+            if (g.sequence && (winTile == g.tile || winTile == g.tile+1 || winTile == g.tile+2)) {
+                use = true; cur.waitMeldIndex = depth; }
+        }
+        cur.tileIds[depth] = g.tile;
+        cur.groupTypes[depth] = g.sequence;
+        dfsGroups(i, depth + 1, cnt, used, cur, winTile, use, res);
+        cur.waitMeldIndex = old;
+        if (g.sequence) {
+            used[g.tile]--;
+            used[g.tile+1]--;
+            used[g.tile+2]--;
+        } else {
+            used[g.tile] -= 3;
+        }
+        applyGroup(cnt, g, 1);
     }
 }
 
-// Entry point to search all waits from a superset.
+inline void searchStandardForTile(const Tiles &superset, int winTile, ResultMap &res) {
+    std::array<int,34> cnt{};
+    for (int i = 0; i < 34; ++i) cnt[i] = superset.getCount(i);
+    if (cnt[winTile] >= 4) return;
+    cnt[winTile]++;
+    std::array<int,34> used{};
+    for (int pair = 0; pair < 34; ++pair) {
+        if (cnt[pair] < 2) continue;
+        cnt[pair] -= 2;
+        used[pair] += 2;
+        WinningHand cur{};
+        cur.isChiitoitsu = false;
+        cur.pairTileId = pair;
+        cur.waitMeldIndex = (pair == winTile) ? 4 : -1;
+        bool usedWin = pair == winTile;
+        dfsGroups(0, 0, cnt, used, cur, winTile, usedWin, res);
+        used[pair] -= 2;
+        cnt[pair] += 2;
+    }
+}
+
+inline void dfsSevenPairs(int start, int depth, std::array<int,34> &cnt,
+                          std::array<int,34> &used, WinningHand &cur,
+                          int winTile, ResultMap &res) {
+    if (depth == 7) {
+        if (used[winTile] == 0) return;
+        Tiles full = buildTiles(used);
+        WinningHand out = cur;
+        out.waitTileId = winTile;
+        out.isChiitoitsu = true;
+        out.waitMeldIndex = -1;
+        out.calculateHan();
+        WaitEntry we{winTile, out.totalHan, out.yakuString};
+        Tiles partial = full;
+        partial.remove(winTile);
+        auto &mp = res[partial];
+        if (mp.find(winTile) == mp.end()) mp[winTile] = we;
+        return;
+    }
+    for (int i = start; i < 34; ++i) {
+        if (cnt[i] < 2) continue;
+        cnt[i] -= 2;
+        used[i] += 2;
+        cur.tileIds[depth] = i;
+        dfsSevenPairs(i + 1, depth + 1, cnt, used, cur, winTile, res);
+        used[i] -= 2;
+        cnt[i] += 2;
+    }
+}
+
+inline void searchSevenPairsForTile(const Tiles &superset, int winTile, ResultMap &res) {
+    std::array<int,34> cnt{};
+    for (int i = 0; i < 34; ++i) cnt[i] = superset.getCount(i);
+    if (cnt[winTile] >= 4) return;
+    cnt[winTile]++;
+    std::array<int,34> used{};
+    WinningHand cur{};
+    dfsSevenPairs(0, 0, cnt, used, cur, winTile, res);
+}
+
 inline void searchHands(const Tiles &superset, ResultMap &res) {
-    Tiles cur;
-    searchRec(0,13,cur,superset,res);
+    for (int tile = 0; tile < 34; ++tile) {
+        searchSevenPairsForTile(superset, tile, res);
+        searchStandardForTile(superset, tile, res);
+    }
 }
 
 // Print results sorted by han descending.

@@ -35,7 +35,7 @@ int main(){
         ++countWait;
         ++pos;
     }
-    assert(countHan == 2); // limited to two lines
+    assert(countHan == 4); // han appears in both sections
     assert(countWait == 2);
     std::cout << "Limit tests passed\n";
     return 0;

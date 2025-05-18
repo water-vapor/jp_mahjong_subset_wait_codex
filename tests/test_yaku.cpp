@@ -11,7 +11,7 @@ void resetGame(){
 void test_pinfu(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m2,m5,p2,s2,z7,z7,z7};
+    h.tileIds = {m2,m5,p2,s2,0,0,0};
     h.groupTypes = {1,1,1,1};
     h.pairTileId = m8;
     h.waitMeldIndex = 0;
@@ -25,7 +25,7 @@ void test_pinfu(){
 void test_pinfu_value_pair(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m2,m5,p2,s2,z7,z7,z7};
+    h.tileIds = {m2,m5,p2,s2,0,0,0};
     h.groupTypes = {1,1,1,1};
     h.pairTileId = gameInfo.prevailingWind;
     h.waitMeldIndex = 0;
@@ -36,7 +36,7 @@ void test_pinfu_value_pair(){
 void test_tanyao(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m2,m5,p2,s2,z7,z7,z7};
+    h.tileIds = {m2,m5,p2,s2,0,0,0};
     h.groupTypes = {1,1,1,1};
     h.pairTileId = m6;
     h.waitTileId = m5;
@@ -80,7 +80,7 @@ void test_tile_order(){
 void test_toitoi(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m2,m3,m4,z7,z7,z7};
+    h.tileIds = {m1,m2,m3,m4,0,0,0};
     h.groupTypes = {0,0,0,0};
     h.pairTileId = m5;
     assert(h.toitoi().han == 2);
@@ -92,12 +92,12 @@ void test_toitoi(){
 void test_sanshoku(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m2,m5,p2,s2,z7,z7,z7};
+    h.tileIds = {m2,m5,p2,s2,0,0,0};
     h.groupTypes = {1,1,1,1};
     h.pairTileId = z1;
     assert(h.sanshoku().han == 2);
     WinningHand triplet{};
-    triplet.tileIds = {m3,m7,p3,s3,z7,z7,z7};
+    triplet.tileIds = {m3,m7,p3,s3,0,0,0};
     triplet.groupTypes = {0,0,0,0};
     triplet.pairTileId = z2;
     assert(triplet.sanshoku().han == 2);
@@ -118,7 +118,7 @@ void test_ittsuu(){
 void test_hon_chinitsu(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m2,m4,m7,z7,z7,z7};
+    h.tileIds = {m1,m2,m4,m7,0,0,0};
     h.groupTypes = {1,0,1,1};
     h.pairTileId = m3;
     assert(h.hon_chinitsu().han == 6);
@@ -130,7 +130,7 @@ void test_hon_chinitsu(){
 void test_sanankou(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m2,m3,m4,z7,z7,z7};
+    h.tileIds = {m1,m2,m3,m4,0,0,0};
     h.groupTypes = {0,0,0,0};
     h.pairTileId = m5;
     h.waitMeldIndex = -1;
@@ -144,7 +144,7 @@ void test_sanankou(){
 void test_shousangen(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m2,z5,z6,z7,z7,z7};
+    h.tileIds = {m1,m2,z5,z6,0,0,0};
     h.groupTypes = {0,0,0,0};
     h.pairTileId = z7;
     assert(h.shousangen().han == 2);
@@ -156,7 +156,7 @@ void test_shousangen(){
 void test_daisangen(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,z5,z6,z7,z7,z7,z7};
+    h.tileIds = {m1,z5,z6,z7,0,0,0};
     h.groupTypes = {0,0,0,0};
     h.pairTileId = m2;
     assert(h.daisangen().han == 10000);
@@ -168,7 +168,7 @@ void test_daisangen(){
 void test_suushi(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {z1,z2,z3,z4,z7,z7,z7};
+    h.tileIds = {z1,z2,z3,z4,0,0,0};
     h.groupTypes = {0,0,0,0};
     h.pairTileId = m1;
     assert(h.suushi().han == 20000);
@@ -180,7 +180,7 @@ void test_suushi(){
 void test_tsuuiisou(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {z1,z2,z5,z6,z7,z7,z7};
+    h.tileIds = {z1,z2,z5,z6,0,0,0};
     h.groupTypes = {0,0,0,0};
     h.pairTileId = z3;
     assert(h.tsuuiisou().han == 10000);
@@ -192,7 +192,7 @@ void test_tsuuiisou(){
 void test_ryuuiisou(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {s2,s3,s4,z6,z7,z7,z7};
+    h.tileIds = {s2,s3,s4,z6,0,0,0};
     h.groupTypes = {0,0,0,0};
     h.pairTileId = s8;
     assert(h.ryuuiisou().han == 10000);
@@ -204,7 +204,7 @@ void test_ryuuiisou(){
 void test_chinroutou(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m9,p1,s9,z7,z7,z7};
+    h.tileIds = {m1,m9,p1,s9,0,0,0};
     h.groupTypes = {0,0,0,0};
     h.pairTileId = m1;
     assert(h.chinroutou().han == 10000);
@@ -216,7 +216,7 @@ void test_chinroutou(){
 void test_suuankou_tanki(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m2,m3,m4,z7,z7,z7};
+    h.tileIds = {m1,m2,m3,m4,0,0,0};
     h.groupTypes = {0,0,0,0};
     h.pairTileId = m5;
     h.waitMeldIndex = 4;
@@ -231,7 +231,7 @@ void test_suuankou_tanki(){
 void test_winds(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m2,m3,m4,z1,z7,z7,z7};
+    h.tileIds = {m2,m3,m4,z1,0,0,0};
     h.groupTypes = {0,0,0,0};
     h.pairTileId = m5;
     assert(h.winds().han == 1);
@@ -254,7 +254,7 @@ void test_dora(){
 void test_iipeikou(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m1,m5,m7,z7,z7,z7};
+    h.tileIds = {m1,m1,m5,m7,0,0,0};
     h.groupTypes = {1,1,0,0};
     h.pairTileId = z1;
     assert(h.iipeikou().han == 1);
@@ -266,7 +266,7 @@ void test_iipeikou(){
 void test_ryanpeikou(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m1,m4,m4,z7,z7,z7};
+    h.tileIds = {m1,m1,m4,m4,0,0,0};
     h.groupTypes = {1,1,1,1};
     h.pairTileId = z1;
     assert(h.ryanpeikou().han == 2);
@@ -278,7 +278,7 @@ void test_ryanpeikou(){
 void test_hunroutou(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m9,p1,s9,z7,z7,z7};
+    h.tileIds = {m1,m9,p1,s9,0,0,0};
     h.groupTypes = {0,0,0,0};
     h.pairTileId = z1;
     assert(h.hunroutou().han == 2);
@@ -290,7 +290,7 @@ void test_hunroutou(){
 void test_taiyao(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m7,p1,s7,z7,z7,z7};
+    h.tileIds = {m1,m7,p1,s7,0,0,0};
     h.groupTypes = {1,1,1,1};
     h.pairTileId = m9;
     assert(h.taiyao().han == 3);
@@ -302,7 +302,7 @@ void test_taiyao(){
 void test_chuuren(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m2,m6,m9,z7,z7,z7};
+    h.tileIds = {m1,m2,m6,m9,0,0,0};
     h.groupTypes = {0,1,1,0};
     h.pairTileId = m5;
     h.waitTileId = m3;
@@ -315,7 +315,7 @@ void test_chuuren(){
 void test_reversibleTiles(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m2,m3,m4,z7,z7,z7};
+    h.tileIds = {m1,m2,m3,m4,0,0,0};
     h.groupTypes = {1,1,1,1};
     h.pairTileId = m5;
     assert(h.reversibleTiles().han == 1);
@@ -350,7 +350,7 @@ void test_uumensai(){
 void test_sanshoku_tsuukan(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m5,p4,s7,z7,z7,z7};
+    h.tileIds = {m1,m5,p4,s7,0,0,0};
     h.groupTypes = {1,0,1,1};
     h.pairTileId = z1;
     assert(h.sanshoku_tsuukan().han == 2);
@@ -362,7 +362,7 @@ void test_sanshoku_tsuukan(){
 void test_sanrenkou(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m2,m3,m5,z7,z7,z7};
+    h.tileIds = {m1,m2,m3,m5,0,0,0};
     h.groupTypes = {0,0,0,0};
     h.pairTileId = z1;
     assert(h.sanrenkou().han == 2);
@@ -374,7 +374,7 @@ void test_sanrenkou(){
 void test_isshokuSanjun(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m1,m1,m5,z7,z7,z7};
+    h.tileIds = {m1,m1,m1,m5,0,0,0};
     h.groupTypes = {1,1,1,0};
     h.pairTileId = z1;
     assert(h.isshokuSanjun().han == 2);
@@ -386,7 +386,7 @@ void test_isshokuSanjun(){
 void test_suurenkou(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m1,m1,m1,z7,z7,z7};
+    h.tileIds = {m1,m1,m1,m1,0,0,0};
     h.groupTypes = {0,0,0,0};
     h.pairTileId = z1;
     assert(h.suurenkou().han == 10000);
@@ -398,7 +398,7 @@ void test_suurenkou(){
 void test_isshokuYonjun(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m1,m1,m1,z7,z7,z7};
+    h.tileIds = {m1,m1,m1,m1,0,0,0};
     h.groupTypes = {1,1,1,1};
     h.pairTileId = z1;
     assert(h.isshokuYonjun().han == 10000);
@@ -410,7 +410,7 @@ void test_isshokuYonjun(){
 void test_benikujaku(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {s1,s5,s7,s9,z7,z7,z7};
+    h.tileIds = {s1,s5,s7,s9,0,0,0};
     h.groupTypes = {0,0,0,0};
     h.pairTileId = z7;
     assert(h.benikujaku().han == 10000);
@@ -422,7 +422,7 @@ void test_benikujaku(){
 void test_kouitten(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {s2,s3,s4,s6,z7,z7,z7};
+    h.tileIds = {s2,s3,s4,s6,0,0,0};
     h.groupTypes = {0,0,0,0};
     h.pairTileId = z7;
     assert(h.kouitten().han == 10000);
@@ -456,7 +456,7 @@ void test_daiXrin(){
 void test_hyakumannGoku(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m9,m9,m9,m9,z7,z7,z7};
+    h.tileIds = {m9,m9,m9,m9,0,0,0};
     h.groupTypes = {0,0,0,0};
     h.pairTileId = m9;
     assert(h.hyakumannGoku().han == 10000);
@@ -468,7 +468,7 @@ void test_hyakumannGoku(){
 void test_goldenGateBridge(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m3,m5,m7,z7,z7,z7};
+    h.tileIds = {m1,m3,m5,m7,0,0,0};
     h.groupTypes = {0,0,0,0};
     h.pairTileId = m9;
     assert(h.goldenGateBridge().han == 10000);
@@ -480,7 +480,7 @@ void test_goldenGateBridge(){
 void test_touhokuShinkansen(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m4,m7,z4,z7,z7,z7};
+    h.tileIds = {m1,m4,m7,z4,0,0,0};
     h.groupTypes = {1,1,1,0};
     h.pairTileId = z1;
     h.waitTileId = m3;

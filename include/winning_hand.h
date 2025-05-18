@@ -24,7 +24,8 @@ public:
     WinningHand() = default;
 
     bool isOrdered() const {
-        for (size_t i = 1; i < tileIds.size(); ++i) {
+        size_t limit = isChiitoitsu ? tileIds.size() : 4;
+        for (size_t i = 1; i < limit; ++i) {
             if (tileIds[i] < tileIds[i-1]) return false;
         }
         return true;

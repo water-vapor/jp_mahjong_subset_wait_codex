@@ -749,20 +749,15 @@ public:
     }
 
     bool _sanshouku_tsuukan_helper(int tileId1, int tileId2, int tileId3) const {
-        std::array<int, 3> numCounts{};
-        std::array<int, 3> suitCounts{};
-        numCounts[(tileId1 % 9)/3]++;
-        numCounts[(tileId2 % 9)/3]++;
-        numCounts[(tileId3 % 9)/3]++;
-        suitCounts[Tiles::suitIndex[tileId1]]++;
-        suitCounts[Tiles::suitIndex[tileId2]]++;
-        suitCounts[Tiles::suitIndex[tileId3]]++;
-        if (numCounts[0] == 1 && numCounts[1] == 1 && numCounts[2] == 1){
-            if (suitCounts[0] == 1 && suitCounts[1] == 1 && suitCounts[2] == 1){
-                return true;
-            }
-        }
-        return false;
+        int n1 = tileId1 % 9;
+        int n2 = tileId2 % 9;
+        int n3 = tileId3 % 9;
+        int s1 = Tiles::suitIndex[tileId1];
+        int s2 = Tiles::suitIndex[tileId2];
+        int s3 = Tiles::suitIndex[tileId3];
+        bool diffNumGroup = (n1/3 != n2/3) && (n1/3 != n3/3) && (n2/3 != n3/3);
+        bool diffSuit     = (s1 != s2) && (s1 != s3) && (s2 != s3);
+        return diffNumGroup && diffSuit;
     }
 
     YakuResult sanshoku_tsuukan() const {
@@ -771,24 +766,14 @@ public:
             return res;
         }
         bool isSanshokuTsuukan = false;
-        if (groupTypes[0] == 1 && groupTypes[1] == 1 && groupTypes[2] == 1){
-            if (_sanshouku_tsuukan_helper(tileIds[0], tileIds[1], tileIds[2])){
-                isSanshokuTsuukan = true;
-            }
-        }
-        if (groupTypes[0] == 1 && groupTypes[1] == 1 && groupTypes[3] == 1){
-            if (_sanshouku_tsuukan_helper(tileIds[0], tileIds[1], tileIds[3])){
-                isSanshokuTsuukan = true;
-            }
-        }
-        if (groupTypes[0] == 1 && groupTypes[2] == 1 && groupTypes[3] == 1){
-            if (_sanshouku_tsuukan_helper(tileIds[0], tileIds[2], tileIds[3])){
-                isSanshokuTsuukan = true;
-            }
-        }
-        if (groupTypes[1] == 1 && groupTypes[2] == 1 && groupTypes[3] == 1){
-            if (_sanshouku_tsuukan_helper(tileIds[1], tileIds[2], tileIds[3])){
-                isSanshokuTsuukan = true;
+        for (int i = 0; i < 4 && !isSanshokuTsuukan; ++i){
+            for (int j = i + 1; j < 4 && !isSanshokuTsuukan; ++j){
+                for (int k = j + 1; k < 4 && !isSanshokuTsuukan; ++k){
+                    if (groupTypes[i] == 1 && groupTypes[j] == 1 && groupTypes[k] == 1 &&
+                        _sanshouku_tsuukan_helper(tileIds[i], tileIds[j], tileIds[k])){
+                        isSanshokuTsuukan = true;
+                    }
+                }
             }
         }
         if (isSanshokuTsuukan){
@@ -811,17 +796,15 @@ public:
             return res;
         }
         bool isSanrenkou = false;
-        if (groupTypes[0] == 0 && groupTypes[1] == 0 && groupTypes[2] == 0 && _sanrenkou_helper(tileIds[0], tileIds[1], tileIds[2])){
-            isSanrenkou = true;
-        }
-        if (groupTypes[0] == 0 && groupTypes[1] == 0 && groupTypes[3] == 0 && _sanrenkou_helper(tileIds[0], tileIds[1], tileIds[3])){
-            isSanrenkou = true;
-        }
-        if (groupTypes[0] == 0 && groupTypes[2] == 0 && groupTypes[3] == 0 && _sanrenkou_helper(tileIds[0], tileIds[2], tileIds[3])){
-            isSanrenkou = true;
-        }   
-        if (groupTypes[1] == 0 && groupTypes[2] == 0 && groupTypes[3] == 0 && _sanrenkou_helper(tileIds[1], tileIds[2], tileIds[3])){
-            isSanrenkou = true;
+        for (int i = 0; i < 4 && !isSanrenkou; ++i){
+            for (int j = i + 1; j < 4 && !isSanrenkou; ++j){
+                for (int k = j + 1; k < 4 && !isSanrenkou; ++k){
+                    if (groupTypes[i] == 0 && groupTypes[j] == 0 && groupTypes[k] == 0 &&
+                        _sanrenkou_helper(tileIds[i], tileIds[j], tileIds[k])){
+                        isSanrenkou = true;
+                    }
+                }
+            }
         }
         if (isSanrenkou){
             res.han += 2;
@@ -836,17 +819,15 @@ public:
             return res;
         }
         bool isIsshokuSanjun = false;
-        if (groupTypes[0] == 1 && groupTypes[1] == 1 && groupTypes[2] == 1 && tileIds[0] == tileIds[1] && tileIds[1] == tileIds[2]){
-            isIsshokuSanjun = true;
-        }
-        if (groupTypes[0] == 1 && groupTypes[1] == 1 && groupTypes[3] == 1 && tileIds[0] == tileIds[1] && tileIds[1] == tileIds[3]){
-            isIsshokuSanjun = true;
-        }
-        if (groupTypes[0] == 1 && groupTypes[2] == 1 && groupTypes[3] == 1 && tileIds[0] == tileIds[2] && tileIds[2] == tileIds[3]){
-            isIsshokuSanjun = true;
-        }
-        if (groupTypes[1] == 1 && groupTypes[2] == 1 && groupTypes[3] == 1 && tileIds[1] == tileIds[2] && tileIds[2] == tileIds[3]){
-            isIsshokuSanjun = true;
+        for (int i = 0; i < 4 && !isIsshokuSanjun; ++i){
+            for (int j = i + 1; j < 4 && !isIsshokuSanjun; ++j){
+                for (int k = j + 1; k < 4 && !isIsshokuSanjun; ++k){
+                    if (groupTypes[i] == 1 && groupTypes[j] == 1 && groupTypes[k] == 1 &&
+                        tileIds[i] == tileIds[j] && tileIds[j] == tileIds[k]){
+                        isIsshokuSanjun = true;
+                    }
+                }
+            }
         }
         if (isIsshokuSanjun){
             res.han += 2;
@@ -873,9 +854,25 @@ public:
         if (isChiitoitsu){
             return res;
         }
-        if (groupTypes[0] == 1 && groupTypes[1] == 1 && groupTypes[2] == 1 && groupTypes[3] == 1 && tileIds[0] == tileIds[1] && tileIds[1] == tileIds[2] && tileIds[2] == tileIds[3]){
-            res.han += 10000;
-            res.yaku += "一色四顺 ";
+        bool allSeq = true;
+        for (int i = 0; i < 4; ++i){
+            if (groupTypes[i] != 1){
+                allSeq = false;
+                break;
+            }
+        }
+        if (allSeq){
+            bool same = true;
+            for (int i = 1; i < 4; ++i){
+                if (tileIds[i] != tileIds[0]){
+                    same = false;
+                    break;
+                }
+            }
+            if (same){
+                res.han += 10000;
+                res.yaku += "一色四顺 ";
+            }
         }
         return res;
     }

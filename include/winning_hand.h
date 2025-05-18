@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <cassert>
+#include <algorithm>
 
 struct YakuResult {
     int han{};

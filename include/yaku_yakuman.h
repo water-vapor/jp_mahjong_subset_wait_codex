@@ -209,15 +209,17 @@
     }
 
     bool _sanshouku_tsuukan_helper(int tileId1, int tileId2, int tileId3) const {
-        int n1 = tileId1 % 9;
-        int n2 = tileId2 % 9;
-        int n3 = tileId3 % 9;
+        int r1 = tileId1 % 9;
+        int r2 = tileId2 % 9;
+        int r3 = tileId3 % 9;
         int s1 = Tiles::suitIndex[tileId1];
         int s2 = Tiles::suitIndex[tileId2];
         int s3 = Tiles::suitIndex[tileId3];
-        bool diffNumGroup = (n1/3 != n2/3) && (n1/3 != n3/3) && (n2/3 != n3/3);
+        std::array<int,3> ranks{r1,r2,r3};
+        std::sort(ranks.begin(), ranks.end());
+        bool correctRanks = ranks[0] == 0 && ranks[1] == 3 && ranks[2] == 6;
         bool diffSuit     = (s1 != s2) && (s1 != s3) && (s2 != s3);
-        return diffNumGroup && diffSuit;
+        return correctRanks && diffSuit;
     }
 
     YakuResult sanshoku_tsuukan() const {

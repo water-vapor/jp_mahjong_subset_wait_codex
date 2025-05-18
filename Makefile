@@ -8,12 +8,19 @@ all: main
 main: $(SRC)
 	$(CXX) $(CXXFLAGS) $(SRC) -o main
 
-test: tests/test_tiles
+TESTS=tests/test_tiles tests/test_yaku
+
+test: $(TESTS)
+	./tests/test_tiles
+	./tests/test_yaku
 
 tests/test_tiles: tests/test_tiles.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
 
+tests/test_yaku: tests/test_yaku.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@
+
 clean:
-	rm -f main tests/test_tiles
+	rm -f main $(TESTS)
 
 .PHONY: all test clean

@@ -11,7 +11,7 @@ void resetGame(){
 void compound_pinfu_tanyao(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m3,m6,p4,s5,z7,z7,z7};
+    h.tileIds = {m3,m6,p4,s5,0,0,0};
     h.groupTypes = {1,1,1,1};
     h.pairTileId = m8;
     h.waitMeldIndex = 0;
@@ -23,7 +23,7 @@ void compound_pinfu_tanyao(){
 void compound_toitoi_winds(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m3,p5,s7,z1,z7,z7,z7};
+    h.tileIds = {m3,p5,s7,z1,0,0,0};
     h.groupTypes = {0,0,0,0};
     h.pairTileId = m9;
     h.waitMeldIndex = 3;
@@ -35,7 +35,7 @@ void compound_toitoi_winds(){
 void compound_iipeikou_pinfu(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m3,m3,m6,p5,z7,z7,z7};
+    h.tileIds = {m3,m3,m6,p5,0,0,0};
     h.groupTypes = {1,1,1,1};
     h.pairTileId = m1;
     h.waitMeldIndex = 0;
@@ -47,7 +47,7 @@ void compound_iipeikou_pinfu(){
 void compound_honitsu_toitoi(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m4,m7,z5,z7,z7,z7};
+    h.tileIds = {m1,m4,m7,z5,0,0,0};
     h.groupTypes = {0,0,0,0};
     h.pairTileId = m9;
     h.waitMeldIndex = 0;
@@ -59,7 +59,7 @@ void compound_honitsu_toitoi(){
 void compound_ryanpeikou(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m3,m3,p5,p5,z7,z7,z7};
+    h.tileIds = {m3,m3,p5,p5,0,0,0};
     h.groupTypes = {1,1,1,1};
     h.pairTileId = m1;
     h.waitMeldIndex = 0;
@@ -71,7 +71,7 @@ void compound_ryanpeikou(){
 void compound_ittsuu(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m1,m4,m7,p3,z7,z7,z7};
+    h.tileIds = {m1,m4,m7,p3,0,0,0};
     h.groupTypes = {1,1,1,1};
     h.pairTileId = z1;
     h.waitMeldIndex = 0;
@@ -83,7 +83,7 @@ void compound_ittsuu(){
 void compound_sanshoku(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m3,m7,p3,s3,z7,z7,z7};
+    h.tileIds = {m3,m7,p3,s3,0,0,0};
     h.groupTypes = {1,0,1,1};
     h.pairTileId = z1;
     h.waitMeldIndex = 0;
@@ -105,7 +105,7 @@ void compound_chiitoitsu(){
 void compound_sanrenkou(){
     resetGame();
     WinningHand h{};
-    h.tileIds = {m3,m4,m5,m7,z7,z7,z7};
+    h.tileIds = {m3,m4,m5,m7,0,0,0};
     h.groupTypes = {0,0,0,0};
     h.pairTileId = z1;
     h.waitMeldIndex = 0;

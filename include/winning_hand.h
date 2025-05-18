@@ -323,7 +323,7 @@ public:
         if (isChiitoitsu){
             return false;
         }
-        std::array<int, 4> counts;
+        std::array<int, 4> counts{};
         for (int i = 0; i < 4; i++){
             counts[Tiles::suitIndex[tileIds[i]]]++;
         }
@@ -371,7 +371,7 @@ public:
 
     YakuResult hon_chinitsu() const {
         YakuResult res;
-        std::array<int, 4> counts;
+        std::array<int, 4> counts{};
         int han = 0;
         for (auto tileId : fullTiles()){
             counts[Tiles::suitIndex[tileId]]++;

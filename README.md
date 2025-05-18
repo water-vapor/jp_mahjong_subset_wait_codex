@@ -1,6 +1,6 @@
 # Mahjong Subset Wait Search
 
-This project enumerates all 13-tile subsets from a provided superset and checks whether adding any single tile forms a winning hand. Results are sorted by Han and Fu.
+This project enumerates all 13-tile subsets from a provided superset and checks whether adding any single tile forms a winning hand. Results are sorted by Han.
 
 ## Build
 

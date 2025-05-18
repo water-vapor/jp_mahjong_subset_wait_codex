@@ -20,9 +20,9 @@ int main(){
     std::cout.rdbuf(orig);
 
     std::string out = oss.str();
-    // Output should contain both hands due to the wait count section
+    // Zero-han waits should be filtered from the wait count section
     assert(out.find(h2.toString()) != std::string::npos);
-    assert(out.find(h1.toString()) != std::string::npos);
+    assert(out.find(h1.toString()) == std::string::npos);
     // Verify localization and separator
     assert(out.find("番") != std::string::npos);
     assert(out.find("-----") != std::string::npos);

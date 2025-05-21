@@ -111,6 +111,7 @@ public:
 
     void calculateYaku() {
         addResult(winds());
+        addResult(dragons());
         addResult(dora());
         addResult(tanyao());
         addResult(pinfu());

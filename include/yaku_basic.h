@@ -17,6 +17,30 @@
         }
         return res;
     }
+
+    YakuResult dragons() const {
+        YakuResult res;
+        if (isChiitoitsu){
+            return res;
+        }
+        for (int i = 0; i < 4; i++){
+            if (groupTypes[i] == 0){
+                if (tileIds[i] == z5){
+                    res.han += 1;
+                    res.yaku += "白 ";
+                }
+                if (tileIds[i] == z6){
+                    res.han += 1;
+                    res.yaku += "发 ";
+                }
+                if (tileIds[i] == z7){
+                    res.han += 1;
+                    res.yaku += "中 ";
+                }
+            }
+        }
+        return res;
+    }
     
     YakuResult dora() const {
         YakuResult res;

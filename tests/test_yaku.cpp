@@ -289,6 +289,27 @@ void test_winds_same(){
     assert(h.winds().han == 2);
 }
 
+void test_dragons_single(){
+    resetGame();
+    WinningHand h{};
+    h.tileIds = {z5,m1,p1,s1,0,0,0};
+    h.groupTypes = {0,0,0,0};
+    h.pairTileId = m2;
+    assert(h.dragons().han == 1);
+    WinningHand bad = h;
+    bad.tileIds[0] = z1;
+    assert(bad.dragons().han == 0);
+}
+
+void test_dragons_double(){
+    resetGame();
+    WinningHand h{};
+    h.tileIds = {z5,z6,m1,p1,0,0,0};
+    h.groupTypes = {0,0,0,0};
+    h.pairTileId = s1;
+    assert(h.dragons().han == 2);
+}
+
 void test_dora(){
     resetGame();
     WinningHand h{};
@@ -582,6 +603,8 @@ int main(){
     test_suuankou_tanki();
     test_winds();
     test_winds_same();
+    test_dragons_single();
+    test_dragons_double();
     test_dora();
     test_peikou_single();
     test_peikou_double();

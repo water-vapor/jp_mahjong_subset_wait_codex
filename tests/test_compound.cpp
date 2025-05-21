@@ -53,7 +53,7 @@ void compound_honitsu_toitoi(){
     h.waitMeldIndex = 0;
     h.waitTileId = m1;
     h.calculateHan();
-    assert(h.totalHan == 7);
+    assert(h.totalHan == 8);
 }
 
 void compound_peikou_double(){
